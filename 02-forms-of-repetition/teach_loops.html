@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Double For Loop — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+
+    .page-header .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .page-header h1 .fn {
+      color: var(--green);
+    }
+
+    .page-header .subtitle {
+      margin-top: 12px;
+      color: var(--dim);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson {
+      max-width: 900px;
+      margin: 0 auto 72px;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--green);
+      padding: 3px 10px;
+      flex-shrink: 0;
+    }
+
+    .lesson h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    .lesson p {
+      color: var(--dim);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .lesson p strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414;
+      color: var(--green);
+      padding: 2px 7px;
+      font-size: 0.87em;
+      border: 1px solid #222;
+    }
+
+    .callout {
+      background: #111;
+      border-left: 3px solid var(--green);
+      padding: 12px 18px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .callout strong { color: var(--white); }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 64px auto;
+      max-width: 900px;
+    }
+
+    /* ── TWO-COL ─────────────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── CODE PANEL ──────────────────────────────────────────── */
+    .code-panel {
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .code-panel-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.75;
+      padding: 16px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Syntax colors */
+    .dim   { color: #444; }
+    .kw    { color: #c084fc; }
+    .num   { color: #60a5fa; }
+    .var   { color: var(--white); }
+    .fn    { color: #fbbf24; }
+    .str   { color: var(--green); }
+    .hl    { background: #1a2a1a; display: inline-block; width: 100%; }
+    .hl-c  { background: #1a1a0a; display: inline-block; width: 100%; }
+    .hl-r  { background: #0a0a1a; display: inline-block; width: 100%; }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card {
+      background: var(--black);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .canvas-card-body { padding: 16px; }
+
+    /* ── CONTROLS ────────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    button {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: rgba(91, 223, 140, 0.08); }
+    button:disabled { opacity: 0.35; cursor: default; }
+
+    .status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--dim);
+    }
+    .status .c-val { color: #f97316; font-weight: 600; }
+    .status .r-val { color: #60a5fa; font-weight: 600; }
+
+    /* ── VARIABLE TRACKER ────────────────────────────────────── */
+    .var-track {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .var-box {
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .var-box .name  { color: var(--dim); font-size: 0.78rem; }
+    .var-box .value { color: var(--green); font-weight: 600; font-size: 1rem; }
+    .var-box.active-c { border-color: #f97316; }
+    .var-box.active-r { border-color: #60a5fa; }
+    .var-box.active-c .value { color: #f97316; }
+    .var-box.active-r .value { color: #60a5fa; }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 2 · Forms of Repetition</div>
+    <h1>The Double <span class="fn">For Loop</span></h1>
+    <p class="subtitle">One loop walks across columns. Another walks down rows. Together they visit every cell in a grid.</p>
+  </header>
+
+  <!-- ══ LESSON 1 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>The idea in one sentence</h2>
+    </div>
+    <p>
+      Imagine moving your hand across a sheet of grid paper — left to right across a row, then dropping down to start the next row. That's the double for loop. The <strong>outer loop</strong> picks a row <code style="color:#60a5fa">r</code>. The <strong>inner loop</strong> walks every column <code style="color:#f97316">c</code> in that row, left to right. Together, they visit every single cell.
+    </p>
+    <div class="callout">
+      Think of <code style="color:#60a5fa">r</code> as which <strong>row</strong> you're on, and <code style="color:#f97316">c</code> as how far <strong>across</strong> that row you are.
+    </div>
+  </div>
+
+  <!-- ══ LESSON 2 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>Step through it</h2>
+    </div>
+    <p>Press <strong>Next Cell</strong> to visit one cell at a time. Watch the variables update and see which cell gets drawn.</p>
+
+    <div class="var-track">
+      <div class="var-box" id="box-c">
+        <span class="name">c (column)</span>
+        <span class="value" id="val-c">—</span>
+      </div>
+      <div class="var-box" id="box-r">
+        <span class="name">r (row)</span>
+        <span class="value" id="val-r">—</span>
+      </div>
+      <div class="var-box">
+        <span class="name">x = c × col_width</span>
+        <span class="value" id="val-x">—</span>
+      </div>
+      <div class="var-box">
+        <span class="name">y = r × row_height</span>
+        <span class="value" id="val-y">—</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="btn-next">Next Cell →</button>
+      <button id="btn-reset">Reset</button>
+      <span class="status" id="step-status">Press "Next Cell" to start.</span>
+    </div>
+
+    <div class="two-col">
+      <div class="code-panel">
+        <div class="code-panel-title">sketch.js</div>
+        <pre id="code-display"></pre>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-card-title">canvas — 400 × 400 px</div>
+        <div class="canvas-card-body">
+          <div id="loop-canvas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 3 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>How pixel coordinates are calculated</h2>
+    </div>
+    <p>The grid divides the canvas into equal cells. <code>c</code> and <code>r</code> are just index numbers (0, 1, 2…). To get actual pixel positions, multiply by the cell size:</p>
+
+    <div class="two-col">
+      <div class="code-panel">
+        <div class="code-panel-title">coordinate math</div>
+        <pre>
+<span class="kw">let</span> <span class="var">col_width</span>  <span class="dim">= width / num_cols;</span>   <span class="dim">// 400 / 5 = 80</span>
+<span class="kw">let</span> <span class="var">row_height</span> <span class="dim">= height / num_rows;</span>  <span class="dim">// 400 / 5 = 80</span>
+
+<span class="dim">// Inside the loop:</span>
+<span class="kw">let</span> <span class="var">x</span> = <span style="color:#f97316">c</span> * <span class="var">col_width</span>;   <span class="dim">// left edge of cell</span>
+<span class="kw">let</span> <span class="var">y</span> = <span style="color:#60a5fa">r</span> * <span class="var">row_height</span>;  <span class="dim">// top edge of cell</span>
+
+<span class="dim">// Center of the cell:</span>
+<span class="var">x</span> + <span class="var">col_width</span>  / <span class="num">2</span>
+<span class="var">y</span> + <span class="var">row_height</span> / <span class="num">2</span>
+</pre>
+      </div>
+      <div style="font-size:0.88rem; color:var(--dim); padding-top:4px;">
+        <p>So when <code style="color:#f97316">c = 2</code> and <code style="color:#60a5fa">r = 1</code>:</p>
+        <p style="margin-top:8px">x = 2 × 80 = <strong style="color:var(--white)">160</strong></p>
+        <p>y = 1 × 80 = <strong style="color:var(--white)">80</strong></p>
+        <p style="margin-top:8px">Ellipse center: (<strong style="color:var(--white)">200</strong>, <strong style="color:var(--white)">120</strong>)</p>
+        <div class="callout" style="margin-top:16px">
+          The cell index × cell size gives you the <strong>top-left corner</strong>. Add half the cell size to get the <strong>center</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 4 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>The full sketch</h2>
+    </div>
+    <div class="two-col">
+      <div class="code-panel">
+        <div class="code-panel-title">sketch.js — full version</div>
+        <pre>
+<span class="kw">let</span> <span class="var">PALETTE</span> = [<span class="str">"#FFFFFF"</span>, <span class="str">"#000000"</span>];
+
+<span class="kw">function</span> <span class="fn">setup</span>() {
+  <span class="fn">createCanvas</span>(<span class="num">400</span>, <span class="num">400</span>);
+  <span class="fn">noLoop</span>();
+}
+
+<span class="kw">function</span> <span class="fn">draw</span>() {
+  <span class="kw">let</span> <span class="var">num_rows</span> = <span class="num">5</span>;
+  <span class="kw">let</span> <span class="var">num_cols</span> = <span class="num">5</span>;
+
+  <span class="kw">let</span> <span class="var">col_width</span>  = <span class="var">width</span>  / <span class="var">num_cols</span>;
+  <span class="kw">let</span> <span class="var">row_height</span> = <span class="var">height</span> / <span class="var">num_rows</span>;
+
+  <span class="fn">background</span>(<span class="num">220</span>);
+
+  <span class="dim">// Outer loop — walks down rows</span>
+  <span class="kw">for</span> (<span class="kw">let</span> <span style="color:#60a5fa">r</span> = <span class="num">0</span>; <span style="color:#60a5fa">r</span> &lt; <span class="var">num_rows</span>; <span style="color:#60a5fa">r</span>++) {
+
+    <span class="dim">  // Inner loop — walks left to right across columns</span>
+    <span class="kw">  for</span> (<span class="kw">let</span> <span style="color:#f97316">c</span> = <span class="num">0</span>; <span style="color:#f97316">c</span> &lt; <span class="var">num_cols</span>; <span style="color:#f97316">c</span>++) {
+
+      <span class="kw">  let</span> <span class="var">x</span> = <span style="color:#f97316">c</span> * <span class="var">col_width</span>;
+      <span class="kw">  let</span> <span class="var">y</span> = <span style="color:#60a5fa">r</span> * <span class="var">row_height</span>;
+
+      <span class="fn">  fill</span>(<span class="fn">random</span>(<span class="var">PALETTE</span>));
+      <span class="fn">  ellipse</span>(<span class="var">x</span>+<span class="var">col_width</span>/<span class="num">2</span>,
+               <span class="var">y</span>+<span class="var">row_height</span>/<span class="num">2</span>,
+               <span class="num">30</span>, <span class="num">30</span>);
+    }
+  }
+}
+</pre>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-card-title">result</div>
+        <div class="canvas-card-body">
+          <div id="final-canvas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ── Interactive step-through ─────────────────────────────────
+const NUM_COLS = 5;
+const NUM_ROWS = 5;
+const CANVAS_SIZE = 300;
+const CELL = CANVAS_SIZE / NUM_COLS;
+
+let stepSketch;
+let cells = [];
+let stepIndex = -1;
+const TOTAL_STEPS = NUM_COLS * NUM_ROWS;
+
+let stepOrder = [];
+for (let r = 0; r < NUM_ROWS; r++)
+  for (let c = 0; c < NUM_COLS; c++)
+    stepOrder.push({ c, r, color: Math.random() < 0.5 ? '#ffffff' : '#000000' });
+
+function renderCode(activeC, activeR, started) {
+  const dim = s => `<span class="dim">${s}</span>`;
+  const kw  = s => `<span class="kw">${s}</span>`;
+  const fn  = s => `<span class="fn">${s}</span>`;
+  const num = s => `<span class="num">${s}</span>`;
+  const cv  = s => `<span style="color:#f97316;font-weight:600">${s}</span>`;
+  const rv  = s => `<span style="color:#60a5fa;font-weight:600">${s}</span>`;
+  const hlC = s => started ? `<span class="hl" style="background:#1f1208">${s}</span>` : s;
+  const hlR = s => started ? `<span class="hl" style="background:#080f1f">${s}</span>` : s;
+  const hlB = s => started ? `<span class="hl" style="background:#0f0f22">${s}</span>` : s;
+
+  return `${dim('// Outer loop — rows (top to bottom)')}
+${hlR(`${kw('for')} (${kw('let')} ${rv('r')} = ${num('0')}; ${rv('r')} &lt; num_rows; ${rv('r')}++) {   ${dim(`// r = ${activeR ?? '?'}`)}`)}
+
+  ${dim('// Inner loop — columns (left to right)')}
+  ${hlC(`${kw('for')} (${kw('let')} ${cv('c')} = ${num('0')}; ${cv('c')} &lt; num_cols; ${cv('c')}++) {  ${dim(`// c = ${activeC ?? '?'}`)}`)}
+
+    ${hlB(`${kw('let')} x = ${cv('c')} * col_width;   ${dim(`// ${activeC != null ? activeC + ' × ' + CELL + ' = ' + activeC * CELL : '?'}`)}`)}
+    ${hlB(`${kw('let')} y = ${rv('r')} * row_height;  ${dim(`// ${activeR != null ? activeR + ' × ' + CELL + ' = ' + activeR * CELL : '?'}`)}`)}
+
+    ${hlB(`${fn('fill')}(${fn('random')}(PALETTE));`)}
+    ${hlB(`${fn('ellipse')}(x + col_width/2, y + row_height/2, 30, 30);`)}
+  }
+}`;
+}
+
+stepSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
+    c.parent('loop-canvas');
+    p.noLoop();
+    p.background(220);
+    p.stroke(180); p.strokeWeight(1); p.noFill();
+    for (let cc = 0; cc < NUM_COLS; cc++)
+      for (let rr = 0; rr < NUM_ROWS; rr++)
+        p.rect(cc * CELL, rr * CELL, CELL, CELL);
+  };
+  p.draw = function() {
+    p.background(220);
+    p.stroke(200); p.strokeWeight(1); p.noFill();
+    for (let cc = 0; cc < NUM_COLS; cc++)
+      for (let rr = 0; rr < NUM_ROWS; rr++)
+        p.rect(cc * CELL, rr * CELL, CELL, CELL);
+    p.noStroke();
+    for (const cell of cells) {
+      p.fill(cell.color);
+      p.ellipse(cell.c * CELL + CELL / 2, cell.r * CELL + CELL / 2, 28, 28);
+    }
+    if (stepIndex >= 0 && stepIndex < TOTAL_STEPS) {
+      const cur = stepOrder[stepIndex];
+      p.noFill();
+      p.stroke('#f97316'); p.strokeWeight(2.5);
+      p.rect(cur.c * CELL + 2, cur.r * CELL + 2, CELL - 4, CELL - 4, 3);
+    }
+  };
+}, 'loop-canvas');
+
+document.getElementById('code-display').innerHTML = renderCode(null, null, false);
+
+document.getElementById('btn-next').addEventListener('click', function() {
+  stepIndex++;
+  if (stepIndex >= TOTAL_STEPS) return;
+
+  const step = stepOrder[stepIndex];
+  cells.push(step);
+
+  document.getElementById('val-c').textContent = step.c;
+  document.getElementById('val-r').textContent = step.r;
+  document.getElementById('val-x').textContent = step.c * CELL;
+  document.getElementById('val-y').textContent = step.r * CELL;
+  document.getElementById('box-c').className = 'var-box active-c';
+  document.getElementById('box-r').className = 'var-box active-r';
+
+  document.getElementById('step-status').innerHTML =
+    `Cell <strong>${stepIndex + 1}</strong> of ${TOTAL_STEPS} — ` +
+    `<span class="r-val">r=${step.r}</span>, <span class="c-val">c=${step.c}</span>`;
+
+  document.getElementById('code-display').innerHTML = renderCode(step.c, step.r, true);
+  stepSketch.redraw();
+
+  if (stepIndex === TOTAL_STEPS - 1)
+    document.getElementById('btn-next').disabled = true;
+});
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  stepIndex = -1;
+  cells = [];
+  document.getElementById('val-c').textContent = '—';
+  document.getElementById('val-r').textContent = '—';
+  document.getElementById('val-x').textContent = '—';
+  document.getElementById('val-y').textContent = '—';
+  document.getElementById('box-c').className = 'var-box';
+  document.getElementById('box-r').className = 'var-box';
+  document.getElementById('step-status').textContent = 'Press "Next Cell" to start.';
+  document.getElementById('code-display').innerHTML = renderCode(null, null, false);
+  document.getElementById('btn-next').disabled = false;
+  stepSketch.redraw();
+});
+
+// ── Final full canvas ────────────────────────────────────────
+new p5(function(p) {
+  let PALETTE = ['#ffffff', '#000000'];
+  p.setup = function() {
+    let c = p.createCanvas(300, 300); c.parent('final-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    let num_rows = 5, num_cols = 5;
+    let col_width = p.width / num_cols;
+    let row_height = p.height / num_rows;
+    p.background(220);
+    p.noStroke();
+    for (let c = 0; c < num_cols; c++) {
+      for (let r = 0; r < num_rows; r++) {
+        let x = c * col_width;
+        let y = r * row_height;
+        p.fill(p.random(PALETTE));
+        p.ellipse(x + col_width / 2, y + row_height / 2, 30, 30);
+      }
+    }
+  };
+}, 'final-canvas');
+</script>
+</body>
+</html>

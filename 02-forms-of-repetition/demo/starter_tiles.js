@@ -34,6 +34,7 @@
 
 // ------------------------------------------------------------
 // CIRCLE
+// circle(x, y, diameter)  — x,y is the center; diameter sets the size
 // A filled circle in the center of the tile.
 // ------------------------------------------------------------
 function drawTile_circle() {
@@ -43,8 +44,8 @@ function drawTile_circle() {
 
 // ------------------------------------------------------------
 // TRIANGLE
+// triangle(x1, y1, x2, y2, x3, y3)  — three corner points, clockwise
 // A large triangle pointing upward, filling most of the tile.
-// triangle() takes three (x, y) pairs — the three corners.
 // ------------------------------------------------------------
 function drawTile_triangle() {
   triangle(s / 2, 0, 0, s, s, s);
@@ -53,8 +54,8 @@ function drawTile_triangle() {
 
 // ------------------------------------------------------------
 // SQUARE
+// square(x, y, size)  — x,y is the top-left corner; size is side length
 // A small square offset from center.
-// square(x, y, size) — x and y are the top-left corner.
 // ------------------------------------------------------------
 function drawTile_square() {
   square(s / 2, s / 2, s / 2);
@@ -63,8 +64,8 @@ function drawTile_square() {
 
 // ------------------------------------------------------------
 // ELLIPSE
+// ellipse(x, y, w, h)  — x,y is the center; w and h set width and height
 // A wide, flat ellipse in the center.
-// ellipse(x, y, width, height) — x and y are the center.
 // ------------------------------------------------------------
 function drawTile_ellipse() {
   ellipse(s / 2, s / 2, s * 0.6, s * 0.3);
@@ -77,6 +78,7 @@ function drawTile_ellipse() {
 
 // ------------------------------------------------------------
 // DIAGONAL LINE
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // The simplest possible tile. A single line from the top-left
 // corner to the bottom-right corner.
 // ------------------------------------------------------------
@@ -88,6 +90,7 @@ function drawTile_diagonal() {
 
 // ------------------------------------------------------------
 // HORIZONTAL LINE
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // A single horizontal line through the middle of the tile.
 // ------------------------------------------------------------
 function drawTile_horizontal() {
@@ -97,6 +100,7 @@ function drawTile_horizontal() {
 
 // ------------------------------------------------------------
 // VERTICAL LINE
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // A single vertical line, slightly left of center.
 // ------------------------------------------------------------
 function drawTile_vertical() {
@@ -110,6 +114,7 @@ function drawTile_vertical() {
 
 // ------------------------------------------------------------
 // THREE DOTS IN A DIAGONAL
+// circle(x, y, diameter)  — x,y is the center; diameter sets the size
 // Three small dots arranged from bottom-left to top-right.
 // We use small circles instead of point() so the dots have
 // a consistent size regardless of stroke weight.
@@ -127,6 +132,7 @@ function drawTile_three_dots() {
 
 // ------------------------------------------------------------
 // TWO QUARTER ARCS (the classic Truchet tile)
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
 // Two quarter circles in opposite corners. When the engine
 // rotates this across the grid, the arcs link up to form
 // continuous flowing curves. One of the most visually
@@ -140,6 +146,7 @@ function drawTile_double_arc() {
 
 // ------------------------------------------------------------
 // S-CURVE
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
 // Two arcs forming an S shape — one at the top opening down,
 // one at the bottom opening up.
 // ------------------------------------------------------------
@@ -155,6 +162,8 @@ function drawTile_s_curve() {
 
 // ------------------------------------------------------------
 // CIRCLE WITH A LINE THROUGH IT
+// circle(x, y, diameter)  — x,y is the center; diameter sets the size
+// line(x1, y1, x2, y2)    — draws a straight line from (x1,y1) to (x2,y2)
 // A circle in the center crossed by a horizontal line.
 // Two primitives combined.
 // ------------------------------------------------------------
@@ -166,6 +175,8 @@ function drawTile_circle_line() {
 
 // ------------------------------------------------------------
 // TRIANGLE WITH A DOT ABOVE
+// triangle(x1, y1, x2, y2, x3, y3)  — three corner points, clockwise
+// circle(x, y, diameter)             — x,y is the center; diameter sets the size
 // A small narrow triangle with a small dot floating above
 // its apex. Asymmetric — looks different in each rotation.
 // ------------------------------------------------------------
@@ -177,6 +188,8 @@ function drawTile_triangle_dot() {
 
 // ------------------------------------------------------------
 // ARC HILL WITH CIRCLE BELOW
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
+// circle(x, y, diameter)         — x,y is the center; diameter sets the size
 // A half-circle opening downward (like a hill or dome) with
 // a small filled circle sitting beneath it.
 // ------------------------------------------------------------
@@ -188,6 +201,11 @@ function drawTile_hill_circle() {
 
 // ------------------------------------------------------------
 // TILTED ELLIPSE AND RECTANGLE
+// push() / pop()       — save and restore the current transform state
+// translate(x, y)      — move the origin to (x,y)
+// rotate(angle)        — rotate by angle in radians around the current origin
+// ellipse(x, y, w, h)  — center (x,y), width w, height h
+// rect(x, y, w, h)     — top-left corner (x,y), width w, height h
 // A tilted ellipse next to an upright rectangle. This one
 // uses push() and rotate() to tilt just the ellipse, then
 // pop() to draw the rectangle without rotation.
@@ -223,6 +241,7 @@ function drawTile_empty() {
 
 // ------------------------------------------------------------
 // SINGLE CORNER ARC
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
 // One quarter-circle in the top-left corner only.
 // Much quieter than the double arc. When rotated randomly,
 // it scatters curves loosely across the grid.
@@ -234,6 +253,7 @@ function drawTile_corner_arc() {
 
 // ------------------------------------------------------------
 // CORNER BRACKET (L-shape)
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // Two lines meeting at the top-left corner — like the corner
 // of a picture frame. Rotated randomly, the brackets snap
 // together to form enclosures and channels.
@@ -246,6 +266,9 @@ function drawTile_bracket() {
 
 // ------------------------------------------------------------
 // HALF-FILLED TRIANGLE
+// fill(color)              — sets the fill color (0 = black)
+// triangle(x1, y1, x2, y2, x3, y3)  — three corner points, clockwise
+// noFill()                 — disables fill for subsequent shapes
 // A filled right triangle in the lower-left half of the tile.
 // When rotated randomly, you get soft checkerboard-like forms.
 // When all facing the same direction, you get a solid diagonal
@@ -261,6 +284,7 @@ function drawTile_half_fill() {
 
 // ------------------------------------------------------------
 // DOT GRID
+// circle(x, y, diameter)  — x,y is the center; diameter sets the size
 // A 3×3 grid of small dots filling the tile.
 // Repetition inside repetition. Try changing the dot size
 // (the last argument to circle) or the spacing.
@@ -277,6 +301,7 @@ function drawTile_dot_grid() {
 
 // ------------------------------------------------------------
 // LEAF / LENS
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
 // Two arcs curving toward each other to form a pointed lens
 // shape. The top arc bows up; the bottom arc bows down.
 // Rotated at 90° and 270°, the leaf stands upright.
@@ -289,6 +314,7 @@ function drawTile_leaf() {
 
 // ------------------------------------------------------------
 // STARBURST
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // Eight short lines radiating from the tile center, evenly
 // spaced. Symmetric — the same in every rotation. Vary the
 // line length (the 0.4 multiplier) to make it denser or looser.
@@ -305,6 +331,7 @@ function drawTile_starburst() {
 
 // ------------------------------------------------------------
 // NESTED SQUARES
+// rect(x, y, w, h)  — top-left corner (x,y), width w, height h
 // Three concentric squares, shrinking toward the center.
 // All stroke, no fill — like a bullseye made of rectangles.
 // Symmetric, but has more visual weight than the rings version.
@@ -321,6 +348,9 @@ function drawTile_nested_squares() {
 
 // ------------------------------------------------------------
 // WAVE
+// beginShape() / endShape()  — start and end a custom shape
+// curveVertex(x, y)          — adds a smooth Catmull-Rom curve point; first and last
+//                              are phantom control points that shape the curve's ends
 // A smooth S-shaped curve crossing the tile from left edge to
 // right edge, passing through the center. The curve is drawn
 // with beginShape / curveVertex so it stays smooth.
@@ -342,6 +372,7 @@ function drawTile_wave() {
 
 // ------------------------------------------------------------
 // SPIRAL SUGGESTION
+// arc(x, y, w, h, start, stop)  — center (x,y), size w×h, start/stop angles in radians
 // Three concentric quarter-arcs, each slightly larger than
 // the last, stepping around the center. Not a true spiral —
 // more of a suggestion of one. Asymmetric, so rotation
@@ -356,6 +387,7 @@ function drawTile_spiral() {
 
 // ------------------------------------------------------------
 // TWO PARALLEL LINES
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // A pair of horizontal lines running across the tile, sitting
 // above and below center. They tile seamlessly end-to-end.
 // Rotated 90°, they become vertical stripes.
@@ -368,6 +400,7 @@ function drawTile_parallel_lines() {
 
 // ------------------------------------------------------------
 // STEP
+// line(x1, y1, x2, y2)  — draws a straight line from (x1,y1) to (x2,y2)
 // A right-angle polyline that steps from the left edge to the
 // bottom edge — like one stair. When you tile it and rotate,
 // the steps lock together into zigzag staircases and maze-like

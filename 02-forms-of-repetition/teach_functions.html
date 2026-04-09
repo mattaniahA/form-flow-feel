@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is a Function? — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+
+    .page-header .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .page-header h1 .fn {
+      color: var(--green);
+    }
+
+    .page-header .subtitle {
+      margin-top: 12px;
+      color: var(--dim);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson {
+      max-width: 900px;
+      margin: 0 auto 72px;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--green);
+      padding: 3px 10px;
+      flex-shrink: 0;
+    }
+
+    .lesson h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    .lesson p {
+      color: var(--dim);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .lesson p strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414;
+      color: var(--green);
+      padding: 2px 7px;
+      font-size: 0.87em;
+      border: 1px solid #222;
+    }
+
+    .callout {
+      background: #111;
+      border-left: 3px solid var(--green);
+      padding: 12px 18px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .callout strong { color: var(--white); }
+    .callout.green  { border-color: var(--green); }
+    .callout.orange { border-color: #f97316; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 64px auto;
+      max-width: 900px;
+    }
+
+    /* ── TWO-COL ─────────────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── CODE PANEL ──────────────────────────────────────────── */
+    .code-panel {
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .code-panel-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      padding: 16px 20px;
+      overflow-x: auto;
+    }
+
+    /* Syntax colors */
+    .kw  { color: #c084fc; }
+    .fn  { color: #fbbf24; }
+    .num { color: #60a5fa; }
+    .dim { color: #444; }
+    .str { color: var(--green); }
+    .hi  { background: #141f14; padding: 1px 4px; }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card {
+      background: var(--black);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .canvas-card-body { padding: 16px; }
+
+    /* ── PILL LIST ───────────────────────────────────────────── */
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      color: var(--green);
+      padding: 5px 14px;
+    }
+
+    /* ── ANATOMY TABLE ───────────────────────────────────────── */
+    .anatomy-table {
+      width: 100%;
+      font-size: 0.87rem;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .anatomy-table tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .anatomy-table td {
+      padding: 10px 14px;
+    }
+
+    .anatomy-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .anatomy-table td:last-child {
+      color: var(--dim);
+    }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    button {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    button:hover { background: rgba(91, 223, 140, 0.08); }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 2 · Forms of Repetition</div>
+    <h1>What Is a <span class="fn">Function</span>?</h1>
+    <p class="subtitle">You've already been using them. Now you'll write your own.</p>
+  </header>
+
+  <!-- ══ LESSON 1 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>You've been calling functions this whole time</h2>
+    </div>
+    <p>
+      Every time you write <code>background()</code> or <code>line()</code> or <code>rotate()</code>, you are <strong>calling a function</strong>. A function is a named action — a package of instructions you can trigger by name.
+    </p>
+    <div class="pill-list">
+      <span class="pill">createCanvas()</span>
+      <span class="pill">background()</span>
+      <span class="pill">stroke()</span>
+      <span class="pill">strokeWeight()</span>
+      <span class="pill">line()</span>
+      <span class="pill">translate()</span>
+      <span class="pill">rotate()</span>
+      <span class="pill">push()</span>
+      <span class="pill">pop()</span>
+      <span class="pill">noLoop()</span>
+    </div>
+    <p>p5.js wrote all of those for you. When you type <code>line(0, 0, 200, 200)</code>, you're not writing the line-drawing code — you're telling p5 to run it.</p>
+    <div class="callout">
+      <strong>A function call = a name + parentheses.</strong><br>
+      The values you put inside the parentheses are called <strong>arguments</strong>.
+      They are the inputs the function needs to do its job.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 2 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>You've also been <em>writing</em> functions</h2>
+    </div>
+    <p>
+      <code>setup()</code> and <code>draw()</code> are functions <em>you</em> wrote.
+      p5.js calls them for you automatically — once and then on a loop.
+      Let's look at the anatomy of a function definition:
+    </p>
+
+    <div class="code-panel">
+      <div class="code-panel-title">anatomy of a function</div>
+      <pre>
+<span class="kw">function</span> <span class="fn">setup</span>() {
+  <span class="dim">// everything inside the { } runs when this function is called</span>
+  <span class="fn">createCanvas</span>(<span class="num">400</span>, <span class="num">400</span>);
+  <span class="fn">noLoop</span>();
+}
+</pre>
+    </div>
+
+    <table class="anatomy-table">
+      <tr>
+        <td>function</td>
+        <td>The keyword that says "I'm defining a function"</td>
+      </tr>
+      <tr>
+        <td>setup</td>
+        <td>The name — this is how you call it later</td>
+      </tr>
+      <tr>
+        <td>()</td>
+        <td>The parentheses — inputs go here (this one takes none)</td>
+      </tr>
+      <tr>
+        <td>{ … }</td>
+        <td>The body — all the instructions that run when the function is called</td>
+      </tr>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 3 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>Writing your own function</h2>
+    </div>
+    <p>
+      You can define a function with any name and then call it wherever you want.
+      Here's a function that draws one diagonal line across a 200×200 tile:
+    </p>
+
+    <div class="code-panel">
+      <div class="code-panel-title">defining the function</div>
+      <pre>
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">line</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">200</span>, <span class="num">200</span>);
+}
+</pre>
+    </div>
+
+    <div class="callout green">
+      <strong>Defining</strong> a function doesn't run it. It just gives a name to a set of instructions.
+      The instructions only run when you <strong>call</strong> the function.
+    </div>
+
+    <div class="code-panel">
+      <div class="code-panel-title">calling the function</div>
+      <pre>
+<span class="kw">function</span> <span class="fn">draw</span>() {
+  <span class="fn">background</span>(<span class="num">20</span>, <span class="num">20</span>, <span class="num">40</span>);
+
+  <span class="dim">// calling drawTile() runs whatever is inside it</span>
+  <span class="fn">drawTile</span>();
+}
+
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">line</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">200</span>, <span class="num">200</span>);
+}
+</pre>
+    </div>
+  </div>
+
+  <!-- ══ LESSON 4 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>Where your function fits into the grid</h2>
+    </div>
+    <p>
+      The grid engine uses the double for loop you already know, plus <code>push()</code>, <code>translate()</code>, and <code>rotate()</code> to place each tile.
+      <code>drawTile()</code> is called once per cell — it's the <strong>only</strong> place the tile is described.
+    </p>
+    <div class="code-panel">
+      <div class="code-panel-title">the engine — drawTile() is called inside the loop</div>
+      <pre>
+<span class="kw">for</span> (<span class="kw">let</span> <span style="color:#60a5fa">r</span> = <span class="num">0</span>; <span style="color:#60a5fa">r</span> &lt; rows; <span style="color:#60a5fa">r</span>++) {
+  <span class="kw">for</span> (<span class="kw">let</span> <span style="color:#f97316">c</span> = <span class="num">0</span>; <span style="color:#f97316">c</span> &lt; cols; <span style="color:#f97316">c</span>++) {
+
+    <span class="fn">push</span>();
+
+    <span class="dim">// move to this tile's position on the canvas</span>
+    <span class="fn">translate</span>(<span style="color:#f97316">c</span> * cellSize, <span style="color:#60a5fa">r</span> * cellSize);
+
+    <span class="dim">// rotate the tile randomly 0°, 90°, 180°, or 270°</span>
+    <span class="fn">rotate</span>(<span class="fn">floor</span>(<span class="fn">random</span>(<span class="num">4</span>)) * <span class="fn">HALF_PI</span>);
+
+    <span style="background:#141f14;padding:2px 6px"><span class="fn">drawTile</span>();  <span class="dim">← your function runs here, once per cell</span></span>
+
+    <span class="fn">pop</span>();
+  }
+}
+
+<span class="dim">// ─────────────────────────────────────────</span>
+<span class="dim">// This is the only place the tile is described.</span>
+<span class="dim">// Change what's inside and the whole grid changes.</span>
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">line</span>(<span class="num">0</span>, <span class="num">0</span>, cellSize, cellSize);
+}
+</pre>
+    </div>
+    <div class="callout">
+      <strong>The engine is the engine. The tile is yours.</strong><br>
+      Change <code>drawTile()</code>. Change everything.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 5 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 5</span>
+      <h2>Try it — swap the tile body</h2>
+    </div>
+    <p>
+      Click a tile below. Watch the <code>drawTile()</code> definition update — and see the grid change instantly.
+      <strong>Only what's inside the function changes. The engine stays exactly the same.</strong>
+    </p>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+      <button id="tile-a">Diagonal line</button>
+      <button id="tile-b">Two arcs</button>
+      <button id="tile-c">Corner dot</button>
+    </div>
+
+    <div class="two-col">
+      <div class="code-panel">
+        <div class="code-panel-title">the engine + your function — only the highlighted part changes</div>
+        <pre id="tile-code-display" style="min-height:220px;"></pre>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-card-title">result — 2×2 grid (rotations 0°, 90°, 180°, 270°)</div>
+        <div class="canvas-card-body">
+          <div id="fn-canvas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const CELL = 80;
+let currentTile = 'a';
+let fnSketch;
+
+const engineCode =
+`<span class="dim">// ── ENGINE (never changes) ─────────────────────</span>
+<span class="dim">for (let r = 0; r &lt; rows; r++) {</span>
+<span class="dim">  for (let c = 0; c &lt; cols; c++) {</span>
+<span class="dim">    push();</span>
+<span class="dim">    translate(c * cellSize, r * cellSize);</span>
+<span class="dim">    rotate(floor(random(4)) * HALF_PI);</span>
+
+    <span style="background:#141f14;padding:1px 5px"><span class="fn">drawTile</span>();  <span class="dim">← runs here</span></span>
+
+<span class="dim">    pop();</span>
+<span class="dim">  }</span>
+<span class="dim">}</span>
+
+`;
+
+const tileBody = {
+  a: `<span class="dim">// ── YOUR FUNCTION (this is what you change) ────</span>
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">line</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">${CELL}</span>, <span class="num">${CELL}</span>);
+}`,
+  b: `<span class="dim">// ── YOUR FUNCTION (this is what you change) ────</span>
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">arc</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">${CELL}</span>, <span class="num">${CELL}</span>, <span class="num">0</span>, <span class="fn">HALF_PI</span>);
+  <span class="fn">arc</span>(<span class="num">${CELL}</span>, <span class="num">${CELL}</span>, <span class="num">${CELL}</span>, <span class="num">${CELL}</span>, <span class="fn">PI</span>, <span class="fn">PI + HALF_PI</span>);
+}`,
+  c: `<span class="dim">// ── YOUR FUNCTION (this is what you change) ────</span>
+<span class="kw">function</span> <span class="fn">drawTile</span>() {
+  <span class="fn">circle</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">24</span>);
+}`
+};
+
+function fullCode(id) { return engineCode + tileBody[id]; }
+
+function drawTileA(p, T) {
+  p.line(0, 0, T, T);
+}
+function drawTileB(p, T) {
+  p.arc(0, 0, T, T, 0, p.HALF_PI);
+  p.arc(T, T, T, T, p.PI, p.PI + p.HALF_PI);
+}
+function drawTileC(p, T) {
+  p.noStroke();
+  p.fill(91, 223, 140);
+  p.circle(0, 0, T * 0.27);
+  p.noFill();
+  p.stroke(91, 223, 140);
+}
+
+const tileFns = { a: drawTileA, b: drawTileB, c: drawTileC };
+
+const ROWS = 2, COLS = 2;
+const T = 120;
+
+fnSketch = new p5(function(p) {
+  p.setup = function() {
+    let cv = p.createCanvas(T * COLS, T * ROWS);
+    cv.parent('fn-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    p.background(10, 10, 10);
+    p.stroke(91, 223, 140);
+    p.strokeWeight(2);
+    p.noFill();
+
+    const rots = [0, 1, 2, 3];
+    let idx = 0;
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        p.push();
+        p.translate(c * T, r * T);
+        p.translate(T / 2, T / 2);
+        p.rotate(rots[idx] * p.HALF_PI);
+        p.translate(-T / 2, -T / 2);
+
+        tileFns[currentTile](p, T);
+        p.pop();
+
+        p.push();
+        p.stroke(255, 255, 255, 30);
+        p.strokeWeight(1);
+        p.noFill();
+        p.rect(c * T, r * T, T, T);
+        p.pop();
+
+        p.push();
+        p.noStroke();
+        p.fill(255, 255, 255, 55);
+        p.textFont('monospace');
+        p.textSize(10);
+        p.textAlign(p.LEFT, p.TOP);
+        p.text((rots[idx] * 90) + '°', c * T + 6, r * T + 5);
+        p.pop();
+
+        idx++;
+      }
+    }
+  };
+}, 'fn-canvas');
+
+document.getElementById('tile-code-display').innerHTML = fullCode('a');
+
+['a', 'b', 'c'].forEach(function(id) {
+  document.getElementById('tile-' + id).addEventListener('click', function() {
+    currentTile = id;
+    document.getElementById('tile-code-display').innerHTML = fullCode(id);
+    fnSketch.redraw();
+  });
+});
+</script>
+</body>
+</html>

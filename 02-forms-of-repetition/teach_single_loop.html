@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The For Loop — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+
+    .page-header .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .page-header h1 .fn {
+      color: var(--green);
+    }
+
+    .page-header .subtitle {
+      margin-top: 12px;
+      color: var(--dim);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson {
+      max-width: 900px;
+      margin: 0 auto 72px;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--green);
+      padding: 3px 10px;
+      flex-shrink: 0;
+    }
+
+    .lesson h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    .lesson p {
+      color: var(--dim);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .lesson p strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414;
+      color: var(--green);
+      padding: 2px 7px;
+      font-size: 0.87em;
+      border: 1px solid #222;
+    }
+
+    .callout {
+      background: #111;
+      border-left: 3px solid var(--green);
+      padding: 12px 18px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .callout strong { color: var(--white); }
+    .callout.green  { border-color: var(--green); }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 64px auto;
+      max-width: 900px;
+    }
+
+    /* ── TWO-COL ─────────────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── CODE PANEL ──────────────────────────────────────────── */
+    .code-panel {
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .code-panel-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      padding: 16px 20px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Syntax colors */
+    .kw  { color: #c084fc; }
+    .fn  { color: #fbbf24; }
+    .num { color: #60a5fa; }
+    .dim { color: #444; }
+    .iv  { color: #f97316; font-weight: 600; }
+    .xv  { color: var(--green); font-weight: 600; }
+    .hl  { background: #141f14; display: block; }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card {
+      background: var(--black);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .canvas-card-body { padding: 16px; }
+
+    /* ── STEP-THROUGH ────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    button {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: rgba(91, 223, 140, 0.08); }
+    button:disabled { opacity: 0.3; cursor: default; }
+
+    .status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--dim);
+    }
+
+    /* ── TRACE TABLE ─────────────────────────────────────────── */
+    .trace-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      margin: 16px 0;
+    }
+
+    .trace-table th {
+      text-align: left;
+      padding: 8px 14px;
+      color: var(--dim);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trace-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--dim);
+    }
+
+    .trace-table tr.active td { background: #0e0e0e; color: var(--white); }
+    .trace-table td:first-child { color: #f97316; }
+    .trace-table td:nth-child(2) { color: var(--green); }
+
+    /* ── ANATOMY ROW ─────────────────────────────────────────── */
+    .anatomy-row {
+      display: flex;
+      gap: 0;
+      margin: 20px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .anatomy-part {
+      padding: 16px 18px;
+      border-right: 1px solid var(--border);
+      flex: 1;
+    }
+    .anatomy-part:last-child { border-right: none; }
+    .anatomy-part .part-code { font-size: 0.88rem; margin-bottom: 6px; }
+    .anatomy-part .part-label { font-size: 0.72rem; color: var(--dim); font-family: 'Space Grotesk', sans-serif; }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 2 · Forms of Repetition</div>
+    <h1>The <span class="fn">For Loop</span></h1>
+    <p class="subtitle">When you find yourself writing the same line again and again — that's a loop waiting to happen.</p>
+  </header>
+
+  <!-- ══ LESSON 1 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>Here's what we want to draw</h2>
+    </div>
+    <p>Four squares in a row across the canvas, spaced evenly. This is our goal.</p>
+    <div class="canvas-card">
+      <div class="canvas-card-title">goal — 4 squares</div>
+      <div class="canvas-card-body">
+        <div id="goal-canvas"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 2 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>How do we do it? Write it out</h2>
+    </div>
+    <p>
+      Start with a variable <code>x</code> at the first position. Draw a square. Move <code>x</code> forward. Repeat.
+      Let's write it out <strong>once for each square</strong> so we can see the pattern:
+    </p>
+
+    <div class="two-col">
+      <div class="code-panel">
+        <div class="code-panel-title">single_loop_manual.js</div>
+        <pre>
+<span class="kw">let</span> <span class="xv">x</span> = <span class="num">20</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);  <span class="dim">// square 1, x = 20</span>
+<span class="xv">x</span> += <span class="num">100</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);  <span class="dim">// square 2, x = 120</span>
+<span class="xv">x</span> += <span class="num">100</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);  <span class="dim">// square 3, x = 220</span>
+<span class="xv">x</span> += <span class="num">100</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);  <span class="dim">// square 4, x = 320</span>
+</pre>
+      </div>
+      <div>
+        <p style="padding-top:4px;">Notice the two lines that repeat every time:</p>
+        <div class="code-panel">
+          <div class="code-panel-title">the pattern</div>
+          <pre>
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);
+<span class="xv">x</span> += <span class="num">100</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);
+<span class="xv">x</span> += <span class="num">100</span>;
+
+<span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);
+<span class="xv">x</span> += <span class="num">100</span>;
+<span class="dim">…</span>
+</pre>
+        </div>
+        <div class="callout green">
+          Any time you see the <strong>same block copy-pasted</strong>, a loop can replace it.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 3 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>Collapse it into a for loop</h2>
+    </div>
+    <p>
+      We want to run those two lines <strong>4 times</strong>. A <code>for</code> loop does exactly that —
+      it repeats a block a set number of times and keeps count for you.
+    </p>
+
+    <div class="code-panel">
+      <div class="code-panel-title">single_loop_for.js</div>
+      <pre>
+<span class="kw">let</span> <span class="xv">x</span> = <span class="num">20</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="iv">i</span> = <span class="num">0</span>; <span class="iv">i</span> &lt; <span class="num">4</span>; <span class="iv">i</span>++) {
+  <span class="fn">rect</span>(<span class="xv">x</span>, <span class="num">60</span>, <span class="num">80</span>, <span class="num">80</span>);
+  <span class="xv">x</span> += <span class="num">100</span>;
+}
+</pre>
+    </div>
+
+    <p>The two lines inside the loop are <em>exactly</em> what we wrote four times by hand. Same code. Same result. Less typing.</p>
+
+    <div class="anatomy-row">
+      <div class="anatomy-part">
+        <div class="part-code" style="color:#c084fc;">let <span style="color:#f97316">i</span> = 0</div>
+        <div class="part-label">Start: set the counter to 0</div>
+      </div>
+      <div class="anatomy-part">
+        <div class="part-code"><span style="color:#f97316">i</span> &lt; 4</div>
+        <div class="part-label">Condition: keep going while i is less than 4</div>
+      </div>
+      <div class="anatomy-part">
+        <div class="part-code"><span style="color:#f97316">i</span>++</div>
+        <div class="part-label">Update: add 1 to i after each pass</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>i counts the passes: 0, 1, 2, 3.</strong> When i reaches 4, the condition <code>i &lt; 4</code> is false and the loop stops. That's exactly 4 runs.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 4 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>Step through it</h2>
+    </div>
+    <p>Press <strong>Next Square</strong> to run one pass of the loop at a time. Watch <code style="color:#f97316;border:none;background:none;padding:0;">i</code> and <code style="color:#5bdf8c;border:none;background:none;padding:0;">x</code> update together.</p>
+
+    <div class="controls">
+      <button id="btn-next">Next Square →</button>
+      <button id="btn-reset">Reset</button>
+      <span class="status" id="step-status">Press "Next Square" to start.</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <table class="trace-table">
+          <tr>
+            <th>i</th><th>x</th><th>draws square at…</th>
+          </tr>
+          <tr id="row-0"><td>0</td><td>20</td><td>x = 20</td></tr>
+          <tr id="row-1"><td>1</td><td>120</td><td>x = 120</td></tr>
+          <tr id="row-2"><td>2</td><td>220</td><td>x = 220</td></tr>
+          <tr id="row-3"><td>3</td><td>320</td><td>x = 320</td></tr>
+        </table>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-card-title">canvas — building up</div>
+        <div class="canvas-card-body">
+          <div id="step-canvas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 5 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">What's next</span>
+      <h2>One loop → one row. Two loops → a full grid.</h2>
+    </div>
+    <p>
+      This loop moves across <strong>one row</strong>. If we wrap it inside another loop that moves <strong>down the rows</strong>,
+      we get every cell in a grid — and that's exactly how the Truchet engine works.
+    </p>
+    <div class="code-panel">
+      <div class="code-panel-title">preview — the double for loop</div>
+      <pre>
+<span class="dim">// Outer loop: moves down the rows</span>
+<span class="kw">for</span> (<span class="kw">let</span> <span style="color:#60a5fa">r</span> = <span class="num">0</span>; <span style="color:#60a5fa">r</span> &lt; num_rows; <span style="color:#60a5fa">r</span>++) {
+
+  <span class="dim">// Inner loop: moves across the columns</span>
+  <span class="kw">for</span> (<span class="kw">let</span> <span style="color:#f97316">c</span> = <span class="num">0</span>; <span style="color:#f97316">c</span> &lt; num_cols; <span style="color:#f97316">c</span>++) {
+    <span class="fn">rect</span>(<span style="color:#f97316">c</span> * col_width, <span style="color:#60a5fa">r</span> * row_height, col_width, row_height);
+  }
+}
+</pre>
+    </div>
+  </div>
+
+<script>
+// ── Goal canvas ───────────────────────────────────────────────
+new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(440, 160); c.parent('goal-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    p.background(10, 10, 10);
+    p.fill(91, 223, 140, 50);
+    p.stroke(91, 223, 140, 200);
+    p.strokeWeight(2);
+    let x = 20;
+    for (let i = 0; i < 4; i++) {
+      p.rect(x, 40, 80, 80);
+      x += 100;
+    }
+  };
+}, 'goal-canvas');
+
+// ── Step-through canvas ───────────────────────────────────────
+let stepSketch;
+let stepCount = 0;
+const XS = [20, 120, 220, 320];
+
+stepSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(440, 160); c.parent('step-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    p.background(10, 10, 10);
+    p.strokeWeight(2);
+    for (let i = 0; i < stepCount; i++) {
+      if (i < stepCount - 1) {
+        p.fill(91, 223, 140, 20);
+        p.stroke(91, 223, 140, 80);
+      } else {
+        p.fill(91, 223, 140, 50);
+        p.stroke(91, 223, 140, 200);
+      }
+      p.rect(XS[i], 40, 80, 80);
+    }
+    if (stepCount > 0) {
+      const cur = stepCount - 1;
+      p.noStroke();
+      p.fill(249, 115, 22);
+      p.textFont('monospace');
+      p.textSize(11);
+      p.textAlign(p.CENTER);
+      p.text('i = ' + cur, XS[cur] + 40, 30);
+      p.fill(91, 223, 140);
+      p.text('x = ' + XS[cur], XS[cur] + 40, 145);
+    }
+  };
+}, 'step-canvas');
+
+document.getElementById('btn-next').addEventListener('click', function() {
+  if (stepCount >= 4) return;
+
+  if (stepCount > 0) document.getElementById('row-' + (stepCount - 1)).classList.remove('active');
+  document.getElementById('row-' + stepCount).classList.add('active');
+  document.getElementById('step-status').innerHTML =
+    'Pass <strong>' + (stepCount + 1) + '</strong> of 4 — ' +
+    '<span style="color:#f97316">i = ' + stepCount + '</span>, ' +
+    '<span style="color:#5bdf8c">x = ' + XS[stepCount] + '</span>';
+
+  stepCount++;
+  stepSketch.redraw();
+
+  if (stepCount === 4) document.getElementById('btn-next').disabled = true;
+});
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  stepCount = 0;
+  for (let i = 0; i < 4; i++) document.getElementById('row-' + i).classList.remove('active');
+  document.getElementById('step-status').textContent = 'Press "Next Square" to start.';
+  document.getElementById('btn-next').disabled = false;
+  stepSketch.redraw();
+});
+</script>
+</body>
+</html>
