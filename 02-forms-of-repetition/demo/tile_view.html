@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tile Explorer | FFF Week 2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --green:   #5bdf8c;
+      --white:   #f0f0f0;
+      --dim:     #666;
+      --border:  #222;
+      --surface: #0e0e0e;
+      --hover:   #151515;
+      --active:  #1a2e22;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 32px 100px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 840px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+
+    /* ── Layout ─────────────────────────────────── */
+    .layout {
+      width: 100%;
+      max-width: 840px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      border: 1px solid var(--border);
+      align-items: stretch;
+    }
+
+    /* ── Sidebar ─────────────────────────────────── */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      align-self: stretch;
+      scrollbar-width: thin;
+      scrollbar-color: #2a2a2a transparent;
+    }
+
+    .sidebar::-webkit-scrollbar        { width: 5px; }
+    .sidebar::-webkit-scrollbar-track  { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb  { background: #2a2a2a; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+    .sidebar-inner { padding: 12px 0 20px; }
+
+    .category-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      padding: 20px 18px 6px;
+    }
+
+    .category-label:first-child { padding-top: 12px; }
+
+    .tile-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 400;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: background 0.08s, color 0.08s;
+    }
+
+    .tile-btn:hover  { background: var(--hover); color: var(--white); }
+    .tile-btn.active { background: var(--active); color: var(--green); font-weight: 600; }
+
+    /* ── Right column ────────────────────────────── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-container canvas { display: block; }
+
+    /* ── Code panel ──────────────────────────────── */
+    .code-panel {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex: 1;
+    }
+
+    .code-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .code-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .code-fn-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    .copy-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: border-color 0.1s, color 0.1s;
+    }
+
+    .copy-btn:hover       { border-color: var(--green); color: var(--green); }
+    .copy-btn.copied      { color: var(--green); border-color: var(--green); }
+
+    pre {
+      overflow-x: auto;
+      padding: 22px 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.75;
+      color: var(--white);
+      min-height: 120px;
+    }
+
+    .tok-kw      { color: #c792ea; }
+    .tok-fn      { color: #82aaff; }
+    .tok-num     { color: #f78c6c; }
+    .tok-comment { color: #546e7a; font-style: italic; }
+    .tok-const   { color: #ffcb6b; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Form/Flow/Feel · Week 2</div>
+  <h1>Tile Explorer</h1>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-inner" id="tile-list"></div>
+  </aside>
+
+  <div class="right-col">
+    <div id="canvas-container"></div>
+
+    <div class="code-panel">
+      <div class="code-header">
+        <span class="code-label">drawTile code</span>
+        <span class="code-fn-name" id="code-fn-name"></span>
+        <button class="copy-btn" id="btn-copy">copy</button>
+      </div>
+      <pre id="tile-code"></pre>
+    </div>
+  </div>
+
+</div>
+
+<script src="starter_tiles.js"></script>
+<script>
+
+// ================================================================
+//  TILE CATALOG
+// ================================================================
+
+const TILES = [
+  { label: 'Double Arc (Truchet)', category: 'Curves',  fn: drawTile_double_arc     },
+  { label: 'S-Curve',             category: 'Curves',  fn: drawTile_s_curve        },
+  { label: 'Corner Arc',          category: 'Curves',  fn: drawTile_corner_arc     },
+  { label: 'Leaf / Lens',         category: 'Curves',  fn: drawTile_leaf           },
+  { label: 'Spiral',              category: 'Curves',  fn: drawTile_spiral         },
+
+  { label: 'Circle',              category: 'Shapes',  fn: drawTile_circle         },
+  { label: 'Ellipse',             category: 'Shapes',  fn: drawTile_ellipse        },
+  { label: 'Triangle',            category: 'Shapes',  fn: drawTile_triangle       },
+  { label: 'Square',              category: 'Shapes',  fn: drawTile_square         },
+  { label: 'Nested Squares',      category: 'Shapes',  fn: drawTile_nested_squares },
+  { label: 'Half-Fill Triangle',  category: 'Shapes',  fn: drawTile_half_fill      },
+
+  { label: 'Diagonal',            category: 'Lines',   fn: drawTile_diagonal       },
+  { label: 'Horizontal',          category: 'Lines',   fn: drawTile_horizontal     },
+  { label: 'Vertical',            category: 'Lines',   fn: drawTile_vertical       },
+  { label: 'Parallel Lines',      category: 'Lines',   fn: drawTile_parallel_lines },
+  { label: 'Bracket (L)',         category: 'Lines',   fn: drawTile_bracket        },
+  { label: 'Step',                category: 'Lines',   fn: drawTile_step           },
+  { label: 'Wave',                category: 'Lines',   fn: drawTile_wave           },
+
+  { label: 'Three Dots',          category: 'Dots',    fn: drawTile_three_dots     },
+  { label: 'Dot Grid',            category: 'Dots',    fn: drawTile_dot_grid       },
+  { label: 'Starburst',           category: 'Dots',    fn: drawTile_starburst      },
+
+  { label: 'Circle + Line',       category: 'Combos',  fn: drawTile_circle_line    },
+  { label: 'Triangle + Dot',      category: 'Combos',  fn: drawTile_triangle_dot   },
+  { label: 'Hill + Circle',       category: 'Combos',  fn: drawTile_hill_circle    },
+  { label: 'Tilted Pair',         category: 'Combos',  fn: drawTile_tilted_pair    },
+];
+
+// ================================================================
+//  SETTINGS
+// ================================================================
+
+const TILE_SIZE    = 280;
+const CANVAS_SIZE  = 460;
+const BG_COLOR     = '#f5f5f5';
+const STROKE_COLOR = '#1a1a1a';
+const STROKE_W     = 2;
+
+// ================================================================
+//  ACTIVE TILE STATE
+// ================================================================
+
+let activeTileIndex = 0;
+
+function drawTile() {
+  TILES[activeTileIndex].fn();
+}
+
+// ================================================================
+//  CODE DISPLAY
+// ================================================================
+
+let tileSources = {};
+let plainSources = {};
+
+async function loadTileSources() {
+  const text = await fetch('starter_tiles.js').then(r => r.text());
+  const lines = text.split('\n');
+  const n = lines.length;
+
+  for (let i = 0; i < n; i++) {
+    const fnMatch = lines[i].match(/^function (drawTile_\w+)\(\)/);
+    if (!fnMatch) continue;
+    const name = fnMatch[1];
+
+    let commentStart = i;
+    for (let j = i - 1; j >= 0; j--) {
+      if (lines[j].trim().startsWith('//')) { commentStart = j; }
+      else { break; }
+    }
+
+    let fnEnd = i, depth = 0;
+    while (fnEnd < n) {
+      for (const ch of lines[fnEnd]) {
+        if (ch === '{') depth++;
+        if (ch === '}') depth--;
+      }
+      fnEnd++;
+      if (depth === 0 && fnEnd > i) break;
+    }
+
+    const block = lines.slice(commentStart, fnEnd).join('\n');
+    tileSources[name] = block;
+    plainSources[name] = block;
+  }
+}
+
+function highlight(code) {
+  code = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  code = code.replace(/(\/\/[^\n]*)/g, '<span class="tok-comment">$1</span>');
+  code = code.replace(/\b(function|let|const|var|for|if|else|return|new|true|false)\b/g,
+    '<span class="tok-kw">$1</span>');
+  code = code.replace(/\b(TWO_PI|HALF_PI|PI|QUARTER_PI)\b/g,
+    '<span class="tok-const">$1</span>');
+  code = code.replace(/\b(arc|circle|ellipse|line|rect|square|triangle|point|beginShape|endShape|curveVertex|vertex|push|pop|translate|rotate|fill|noFill|stroke|noStroke|strokeWeight)\b/g,
+    '<span class="tok-fn">$1</span>');
+  code = code.replace(/\b(\d+\.?\d*)\b/g, '<span class="tok-num">$1</span>');
+  return code;
+}
+
+function showTileCode(index) {
+  const tile = TILES[index];
+  const fnName = tile.fn.name;
+  const raw = tileSources[fnName] || tile.fn.toString();
+  document.getElementById('tile-code').innerHTML = highlight(raw);
+  document.getElementById('code-fn-name').textContent = '— ' + tile.label;
+}
+
+document.getElementById('btn-copy').addEventListener('click', function() {
+  const tile = TILES[activeTileIndex];
+  const text = plainSources[tile.fn.name] || tile.fn.toString();
+  navigator.clipboard.writeText(text).then(() => {
+    this.textContent = 'copied!';
+    this.classList.add('copied');
+    setTimeout(() => { this.textContent = 'copy'; this.classList.remove('copied'); }, 1500);
+  });
+});
+
+// ================================================================
+//  SIDEBAR
+// ================================================================
+
+function buildSidebar() {
+  const list = document.getElementById('tile-list');
+  const categories = [...new Set(TILES.map(t => t.category))];
+
+  categories.forEach(cat => {
+    const header = document.createElement('div');
+    header.className = 'category-label';
+    header.textContent = cat;
+    list.appendChild(header);
+
+    TILES.forEach((tile, i) => {
+      if (tile.category !== cat) return;
+      const btn = document.createElement('button');
+      btn.className = 'tile-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = tile.label;
+      btn.dataset.index = i;
+      btn.addEventListener('click', () => selectTile(i));
+      list.appendChild(btn);
+    });
+  });
+}
+
+function selectTile(index) {
+  activeTileIndex = index;
+  document.querySelectorAll('.tile-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.index) === index);
+  });
+  showTileCode(index);
+  redraw();
+}
+
+// ================================================================
+//  P5 — single tile + guide
+// ================================================================
+
+let s;
+
+function setup() {
+  let cnv = createCanvas(CANVAS_SIZE, CANVAS_SIZE);
+  cnv.parent('canvas-container');
+  noLoop();
+  s = TILE_SIZE;
+}
+
+function draw() {
+  background(BG_COLOR);
+
+  let ox = (width  - s) / 2;
+  let oy = (height - s) / 2;
+
+  // draw the tile
+  push();
+    translate(ox, oy);
+    stroke(STROKE_COLOR);
+    strokeWeight(STROKE_W);
+    noFill();
+    drawTile();
+  pop();
+
+  // guide overlay
+  drawGuide(ox, oy);
+}
+
+function drawGuide(ox, oy) {
+  push();
+  translate(ox, oy);
+
+  // tile boundary
+  noFill();
+  stroke(0, 0, 0, 35);
+  strokeWeight(1);
+  rect(0, 0, s, s);
+
+  // reference points
+  const pts = [
+    [0,   0,   '(0, 0)',      LEFT,   TOP   ],
+    [s,   0,   '(s, 0)',      RIGHT,  TOP   ],
+    [0,   s,   '(0, s)',      LEFT,   BOTTOM],
+    [s,   s,   '(s, s)',      RIGHT,  BOTTOM],
+    [s/2, 0,   '(s/2, 0)',   CENTER, TOP   ],
+    [0,   s/2, '(0, s/2)',   LEFT,   CENTER],
+    [s/2, s/2, '(s/2, s/2)', CENTER, CENTER],
+  ];
+
+  for (let [px, py, label, ah, av] of pts) {
+    fill(0, 0, 0, 70);
+    noStroke();
+    circle(px, py, 5);
+
+    fill(0, 0, 0, 90);
+    textFont('monospace');
+    textSize(10);
+    textAlign(ah, av);
+
+    let lx = px + (ah === LEFT ? 7 : ah === RIGHT ? -7 : 0);
+    let ly = py + (av === TOP ? 7 : av === BOTTOM ? -7 : 0);
+    text(label, lx, ly);
+  }
+
+  pop();
+}
+
+// ================================================================
+//  INIT
+// ================================================================
+
+buildSidebar();
+loadTileSources().then(() => showTileCode(0));
+
+</script>
+</body>
+</html>
