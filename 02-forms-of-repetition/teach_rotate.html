@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding rotate() — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+
+    .page-header .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .page-header h1 .fn {
+      color: var(--green);
+    }
+
+    .page-header .subtitle {
+      margin-top: 12px;
+      color: var(--dim);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson {
+      max-width: 900px;
+      margin: 0 auto 72px;
+    }
+
+    .lesson-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--green);
+      padding: 3px 10px;
+      flex-shrink: 0;
+    }
+
+    .lesson h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    .lesson p {
+      color: var(--dim);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .lesson p strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .canvas-row {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+      margin: 24px 0;
+    }
+
+    .canvas-card {
+      background: var(--black);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .canvas-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--dim);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .canvas-label span {
+      color: var(--green);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414;
+      color: var(--green);
+      padding: 2px 7px;
+      font-size: 0.87em;
+      border: 1px solid #222;
+    }
+
+    .callout {
+      background: #111;
+      border-left: 3px solid var(--green);
+      padding: 12px 18px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .callout strong { color: var(--white); }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 64px auto;
+      max-width: 900px;
+    }
+
+    /* ── SANDBOX ─────────────────────────────────────────────── */
+    .sandbox {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #0e0e0e;
+      border: 1px solid var(--border);
+      padding: 36px;
+    }
+
+    .sandbox-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 6px;
+    }
+
+    .sandbox-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--gray);
+      padding: 3px 10px;
+    }
+
+    .sandbox h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .sandbox > p {
+      color: var(--dim);
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 200px;
+    }
+
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    #sandbox-canvas-container canvas { display: block; }
+
+    .angle-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      color: var(--green);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .angle-sub {
+      font-size: 0.75rem;
+      color: var(--dim);
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .legend {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 2 · Forms of Repetition</div>
+    <h1>Understanding <span class="fn">rotate()</span></h1>
+    <p class="subtitle">Three concepts that build intuition, then a sandbox to experiment.</p>
+  </header>
+
+  <!-- ══ LESSON 1 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>rotate() spins around (0, 0) — the top-left corner</h2>
+    </div>
+    <p>
+      When you call <code>rotate()</code>, p5.js spins everything around the <strong>origin</strong> —
+      which starts at the <strong>top-left corner</strong> of the canvas.
+      This is usually <em>not</em> what you want.
+    </p>
+    <div class="callout">
+      The square disappears off-screen because it's rotating around the corner, not its own center.
+    </div>
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-label">no rotate — <span>rotate(0)</span></div>
+        <div id="s1a"></div>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-label">rotated — <span>rotate(PI / 4)</span></div>
+        <div id="s1b"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LESSON 2 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>translate() moves the origin first</h2>
+    </div>
+    <p>
+      The fix: <strong>move the origin to the center of the canvas</strong> using
+      <code>translate(width/2, height/2)</code> <em>before</em> rotating.
+      Now rotation happens around the center.
+    </p>
+    <div class="callout">
+      <strong>Order matters:</strong> always <code>translate()</code> first, then <code>rotate()</code>,
+      then draw your shape.
+    </div>
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-label">translate only</div>
+        <div id="s2a"></div>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-label">translate → <span>rotate(PI / 4)</span></div>
+        <div id="s2b"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LESSON 3 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>Radians: the unit rotate() uses</h2>
+    </div>
+    <p>
+      <code>rotate()</code> takes an angle in <strong>radians</strong>, not degrees.
+      A full circle is <code>TWO_PI</code> (≈ 6.28). Use fractions of <code>PI</code>:
+    </p>
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-label"><span>rotate(0)</span> — 0°</div>
+        <div id="s3a"></div>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-label"><span>rotate(PI/4)</span> — 45°</div>
+        <div id="s3b"></div>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-label"><span>rotate(PI/2)</span> — 90°</div>
+        <div id="s3c"></div>
+      </div>
+      <div class="canvas-card">
+        <div class="canvas-label"><span>rotate(PI)</span> — 180°</div>
+        <div id="s3d"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ SANDBOX ═══════════════════════════════════════════════ -->
+  <div class="sandbox">
+    <div class="sandbox-header">
+      <span class="sandbox-tag">Try it</span>
+      <h2>Drag the slider — watch the angle change</h2>
+    </div>
+    <p>See how the radian value and degrees relate as you rotate the square.</p>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>rotation angle</label>
+        <input type="range" id="angle-slider" min="0" max="628" value="79" step="1">
+      </div>
+      <div>
+        <div class="angle-display" id="angle-display">rotate(PI / 4)</div>
+        <div class="angle-sub" id="angle-sub">≈ 0.785 rad — 45°</div>
+      </div>
+    </div>
+
+    <div id="sandbox-canvas-container"></div>
+
+    <div class="legend">
+      <span><span style="color:#ffffff55;">▦</span> world grid — always fixed</span>
+      <span><span style="color:#ff9632;">→</span> rotated x-axis</span>
+      <span><span style="color:#50dcdc;">↓</span> rotated y-axis</span>
+      <span><span style="color:#f0c040;">◜</span> angle arc</span>
+    </div>
+  </div>
+
+<script>
+// ── Canvas background color ──────────────────────────────────────────
+const BG = [10, 10, 10];
+const GREEN = [91, 223, 140];
+const GREEN_DIM = [91, 223, 140, 160];
+
+// ─── Grid helper (centered origin) ──────────────────────────────────
+function drawGrid(p, halfW, halfH, step) {
+  step = step || 50;
+  p.push();
+  p.stroke(255, 255, 255, 14);
+  p.strokeWeight(1);
+  for (let x = -halfW; x <= halfW; x += step) p.line(x, -halfH, x, halfH);
+  for (let y = -halfH; y <= halfH; y += step) p.line(-halfW, y, halfW, y);
+  p.stroke(255, 255, 255, 40);
+  p.strokeWeight(1);
+  p.line(-halfW, 0, halfW, 0);
+  p.line(0, -halfH, 0, halfH);
+  p.noStroke();
+  p.textFont('monospace');
+  p.textSize(9);
+  p.fill(255, 255, 255, 40);
+  p.textAlign(p.CENTER, p.TOP);
+  for (let x = step; x < halfW; x += step) {
+    p.text(x,  x, 3);
+    p.text(-x, -x, 3);
+  }
+  p.textAlign(p.LEFT, p.CENTER);
+  for (let y = step; y < halfH; y += step) {
+    p.text(y,  4, y);
+    p.text(-y, 4, -y);
+  }
+  p.textAlign(p.LEFT, p.TOP);
+  p.fill(255, 255, 255, 35);
+  p.text('0', 4, 3);
+  p.pop();
+}
+
+// ─── Grid helper (corner origin) ────────────────────────────────────
+function drawGridFromCorner(p, w, h, step) {
+  step = step || 50;
+  p.push();
+  p.stroke(255, 255, 255, 14);
+  p.strokeWeight(1);
+  for (let x = 0; x <= w; x += step) p.line(x, 0, x, h);
+  for (let y = 0; y <= h; y += step) p.line(0, y, w, y);
+  p.stroke(255, 255, 255, 40);
+  p.strokeWeight(1);
+  p.line(0, 0, w, 0);
+  p.line(0, 0, 0, h);
+  p.noStroke();
+  p.textFont('monospace');
+  p.textSize(9);
+  p.fill(255, 255, 255, 40);
+  p.textAlign(p.CENTER, p.TOP);
+  for (let x = step; x < w; x += step) p.text(x, x, 3);
+  p.textAlign(p.LEFT, p.CENTER);
+  for (let y = step; y < h; y += step) p.text(y, 4, y);
+  p.textAlign(p.LEFT, p.TOP);
+  p.fill(255, 255, 255, 35);
+  p.text('(0,0)', 4, 3);
+  p.pop();
+}
+
+// ─── Shared draw helper ──────────────────────────────────────────────
+function drawSquare(p, angle, doTranslate) {
+  p.background(...BG);
+  p.rectMode(p.CENTER);
+
+  if (doTranslate) {
+    p.push();
+    p.translate(p.width / 2, p.height / 2);
+    drawGrid(p, p.width / 2, p.height / 2, 50);
+    p.noStroke();
+    p.fill(...GREEN);
+    p.ellipse(0, 0, 8, 8);
+    p.pop();
+    p.translate(p.width / 2, p.height / 2);
+  } else {
+    drawGridFromCorner(p, p.width, p.height, 50);
+    p.noStroke();
+    p.fill(255, 80, 80, 200);
+    p.ellipse(0, 0, 8, 8);
+  }
+
+  p.rotate(angle);
+  p.stroke(...GREEN, 200);
+  p.strokeWeight(2);
+  p.fill(...GREEN, 50);
+  p.rect(0, 0, 100, 100);
+}
+
+// ─── LESSON 1a ───────────────────────────────────────────────────────
+new p5(function(p) {
+  p.setup = function() { let c = p.createCanvas(200, 200); c.parent('s1a'); p.noLoop(); };
+  p.draw = function() { drawSquare(p, 0, false); };
+}, 's1a');
+
+// ─── LESSON 1b ───────────────────────────────────────────────────────
+new p5(function(p) {
+  p.setup = function() { let c = p.createCanvas(200, 200); c.parent('s1b'); p.noLoop(); };
+  p.draw = function() {
+    p.background(...BG);
+    p.rectMode(p.CENTER);
+    p.push(); p.translate(0, 0); drawGrid(p, p.width, p.height, 50); p.pop();
+    p.noStroke(); p.fill(255, 80, 80, 200); p.ellipse(0, 0, 8, 8);
+    p.rotate(p.PI / 4);
+    p.stroke(...GREEN, 200); p.strokeWeight(2); p.fill(...GREEN, 50);
+    p.rect(0, 0, 100, 100);
+  };
+}, 's1b');
+
+// ─── LESSON 2a ───────────────────────────────────────────────────────
+new p5(function(p) {
+  p.setup = function() { let c = p.createCanvas(200, 200); c.parent('s2a'); p.noLoop(); };
+  p.draw = function() { drawSquare(p, 0, true); };
+}, 's2a');
+
+// ─── LESSON 2b ───────────────────────────────────────────────────────
+new p5(function(p) {
+  p.setup = function() { let c = p.createCanvas(200, 200); c.parent('s2b'); p.noLoop(); };
+  p.draw = function() { drawSquare(p, p.PI / 4, true); };
+}, 's2b');
+
+// ─── LESSON 3: radians gallery ───────────────────────────────────────
+[
+  ['s3a', 0],
+  ['s3b', Math.PI / 4],
+  ['s3c', Math.PI / 2],
+  ['s3d', Math.PI]
+].forEach(function([id, angle]) {
+  new p5(function(p) {
+    p.setup = function() { let c = p.createCanvas(150, 150); c.parent(id); p.noLoop(); };
+    p.draw = function() {
+      p.background(...BG);
+      p.translate(p.width / 2, p.height / 2);
+      drawGrid(p, 75, 75, 30);
+      p.noStroke(); p.fill(...GREEN); p.ellipse(0, 0, 7, 7);
+      p.rotate(angle);
+      drawRotatedAxes(p, 50);
+      p.stroke(...GREEN, 200); p.strokeWeight(2); p.fill(...GREEN, 50);
+      p.rectMode(p.CENTER); p.rect(0, 0, 80, 80);
+    };
+  }, id);
+});
+
+// ─── Rotated axes helper ─────────────────────────────────────────────
+function drawRotatedAxes(p, len) {
+  len = len || 70;
+  p.push();
+  p.strokeWeight(1.5);
+
+  // X axis — orange
+  p.stroke(255, 150, 50, 220); p.fill(255, 150, 50, 220);
+  p.line(0, 0, len, 0);
+  p.noStroke(); p.triangle(len, 0, len - 7, -3, len - 7, 3);
+  p.noStroke(); p.textFont('monospace'); p.textSize(10);
+  p.textAlign(p.LEFT, p.CENTER); p.text('x', len + 4, 0);
+
+  // Y axis — cyan
+  p.stroke(80, 220, 220, 220); p.fill(80, 220, 220, 220);
+  p.line(0, 0, 0, len);
+  p.noStroke(); p.triangle(0, len, -3, len - 7, 3, len - 7);
+  p.noStroke(); p.textAlign(p.CENTER, p.TOP); p.text('y', 0, len + 4);
+
+  p.pop();
+}
+
+// ─── SANDBOX ─────────────────────────────────────────────────────────
+let sandboxSketch;
+let sandboxAngle = Math.PI / 4;
+
+function niceAngleLabel(rad) {
+  const fracs = [
+    [0, '0'],
+    [Math.PI / 6, 'PI / 6'],
+    [Math.PI / 4, 'PI / 4'],
+    [Math.PI / 3, 'PI / 3'],
+    [Math.PI / 2, 'PI / 2'],
+    [2 * Math.PI / 3, '2*PI / 3'],
+    [3 * Math.PI / 4, '3*PI / 4'],
+    [5 * Math.PI / 6, '5*PI / 6'],
+    [Math.PI, 'PI'],
+    [7 * Math.PI / 6, '7*PI / 6'],
+    [5 * Math.PI / 4, '5*PI / 4'],
+    [4 * Math.PI / 3, '4*PI / 3'],
+    [3 * Math.PI / 2, '3*PI / 2'],
+    [5 * Math.PI / 3, '5*PI / 3'],
+    [7 * Math.PI / 4, '7*PI / 4'],
+    [11 * Math.PI / 6, '11*PI / 6'],
+    [2 * Math.PI, 'TWO_PI'],
+  ];
+  let best = fracs[0], bestDist = Infinity;
+  for (const [val, label] of fracs) {
+    const d = Math.abs(rad - val);
+    if (d < bestDist) { bestDist = d; best = [val, label]; }
+  }
+  return bestDist < 0.08 ? best[1] : rad.toFixed(3);
+}
+
+sandboxSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(600, 320); c.parent('sandbox-canvas-container');
+    p.rectMode(p.CENTER); p.noLoop();
+  };
+  p.draw = function() {
+    p.background(...BG);
+    p.translate(p.width / 2, p.height / 2);
+
+    drawGrid(p, p.width / 2, p.height / 2, 50);
+
+    // Origin dot + angle arc
+    p.noStroke(); p.fill(...GREEN); p.ellipse(0, 0, 10, 10);
+    p.noFill(); p.stroke(240, 192, 64, 180); p.strokeWeight(1.5);
+    p.arc(0, 0, 80, 80, 0, sandboxAngle);
+
+    p.rotate(sandboxAngle);
+    drawRotatedAxes(p, 90);
+
+    p.stroke(...GREEN, 200); p.strokeWeight(2.5); p.fill(...GREEN, 45);
+    p.rectMode(p.CENTER); p.rect(0, 0, 150, 150);
+  };
+}, 'sandbox-canvas-container');
+
+document.getElementById('angle-slider').addEventListener('input', function() {
+  sandboxAngle = this.value / 100;
+  const deg = Math.round(sandboxAngle * 180 / Math.PI);
+  document.getElementById('angle-display').textContent = 'rotate(' + niceAngleLabel(sandboxAngle) + ')';
+  document.getElementById('angle-sub').textContent =
+    '≈ ' + sandboxAngle.toFixed(3) + ' rad — ' + deg + '°';
+  sandboxSketch.redraw();
+});
+</script>
+</body>
+</html>
