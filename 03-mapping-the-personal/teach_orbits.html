@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Orbits — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+    .page-header .eyebrow {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+    }
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700; line-height: 1.0;
+      color: var(--white); letter-spacing: -0.02em;
+    }
+    .page-header h1 .fn { color: var(--green); }
+    .page-header .subtitle {
+      margin-top: 12px; color: var(--dim);
+      font-size: 0.95rem; font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson { max-width: 900px; margin: 0 auto 72px; }
+    .lesson-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+    .step-badge {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--black); background: var(--green);
+      padding: 3px 10px; flex-shrink: 0;
+    }
+    .lesson h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); letter-spacing: -0.01em; }
+    .lesson p { color: var(--dim); margin-bottom: 14px; font-size: 0.95rem; }
+    .lesson p strong { color: var(--white); font-weight: 600; }
+
+    /* ── INLINE CODE ─────────────────────────────────────────── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414; color: var(--green);
+      padding: 2px 7px; font-size: 0.87em; border: 1px solid #222;
+    }
+
+    /* ── CALLOUT ─────────────────────────────────────────────── */
+    .callout {
+      background: #111; border-left: 3px solid var(--green);
+      padding: 12px 18px; margin: 16px 0; font-size: 0.9rem; color: var(--gray);
+    }
+    .callout strong { color: var(--white); }
+    .callout.blue   { border-left-color: #60a5fa; }
+    .callout.green  { border-left-color: var(--green); }
+    .callout.yellow { border-left-color: #fbbf24; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 64px auto; max-width: 900px; }
+
+    /* ── CODE BLOCK ──────────────────────────────────────────── */
+    .code-block {
+      background: #0e0e0e; border: 1px solid var(--border);
+      padding: 16px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--gray); line-height: 1.75;
+      overflow-x: auto; margin: 16px 0; white-space: pre;
+    }
+    .code-block .kw   { color: #c084fc; }
+    .code-block .str  { color: var(--green); }
+    .code-block .num  { color: #60a5fa; }
+    .code-block .bool { color: #60a5fa; }
+    .code-block .cmt  { color: #444; }
+    .code-block .key  { color: #f97316; }
+    .code-block .fn   { color: #fbbf24; }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card { background: var(--black); border: 1px solid var(--border); overflow: hidden; }
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--dim); padding: 8px 14px; border-bottom: 1px solid var(--border);
+    }
+    .canvas-card-title span { color: var(--green); font-weight: 600; }
+
+    .canvas-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
+
+    /* ── CONTROLS ────────────────────────────────────────────── */
+    .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; margin-bottom: 20px; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; min-width: 180px; }
+    .control-group label {
+      font-size: 0.8rem; color: var(--dim); font-family: 'JetBrains Mono', monospace;
+    }
+    .control-group label span { color: var(--green); font-weight: 600; }
+    input[type="range"] { width: 100%; accent-color: var(--green); cursor: pointer; }
+    select {
+      background: #0e0e0e; color: var(--white); border: 1px solid var(--border);
+      padding: 6px 10px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; cursor: pointer;
+    }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    button {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      background: transparent; border: 1px solid var(--green);
+      color: var(--green); padding: 7px 16px; cursor: pointer; transition: background 0.15s;
+    }
+    button:hover { background: rgba(91, 223, 140, 0.08); }
+
+    .link-button {
+      display: inline-block; background: transparent;
+      border: 1px solid var(--green); color: var(--green);
+      text-decoration: none; padding: 7px 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      margin-top: 20px; transition: background 0.15s;
+    }
+    .link-button:hover { background: rgba(91, 223, 140, 0.08); }
+    .link-button.alt { border-color: #60a5fa; color: #60a5fa; }
+    .link-button.alt:hover { background: rgba(96, 165, 250, 0.08); }
+
+    /* ── TABLES ──────────────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin: 16px 0;
+    }
+    th {
+      background: #0e0e0e; color: var(--green); font-weight: 600;
+      padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--gray); }
+    tr:hover td { background: #111; }
+
+    /* ── ORBIT SCALE ─────────────────────────────────────────── */
+    .orbit-scale { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+    .orbit-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: #0e0e0e; border: 1px solid var(--border);
+      padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+    }
+    .orbit-chip .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid var(--dim); display: inline-block;
+    }
+
+    /* ── PEOPLE CONTROLS ─────────────────────────────────────── */
+    .people-input-row {
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;
+    }
+    .people-input-row label {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      color: var(--dim); min-width: 120px;
+    }
+    .remove-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--dim); padding: 4px 12px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+    .remove-btn:hover { border-color: #ff758c; color: #ff758c; background: rgba(255,117,140,0.08); }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 3 · Mapping the Personal</div>
+    <h1>Adding Social <span class="fn">Orbits</span></h1>
+    <p class="subtitle">Visualize your daily social interactions as an orbit diagram.</p>
+  </header>
+
+  <!-- ══ STEP 1 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>Data Collection: Your Social Orbits</h2>
+    </div>
+    <p>
+      For each of the last <strong>7 days</strong>, write down the people you interacted with <strong>in person</strong>
+      and score each person on this scale:
+    </p>
+
+    <div class="orbit-scale">
+      <div class="orbit-chip"><div class="dot" style="background: #f0abfc;"></div> <strong>1</strong> = Family <span style="color:var(--dim); font-size:0.75rem;">(closest)</span></div>
+      <div class="orbit-chip"><div class="dot" style="background: #60a5fa;"></div> <strong>2</strong> = Friend</div>
+      <div class="orbit-chip"><div class="dot" style="background: #fbbf24;"></div> <strong>3</strong> = Acquaintance</div>
+      <div class="orbit-chip"><div class="dot" style="background: #888;"></div> <strong>4</strong> = Stranger <span style="color:var(--dim); font-size:0.75rem;">(farthest)</span></div>
+    </div>
+
+    <p>Here is an example of what your table might look like for one day:</p>
+
+    <table>
+      <tr><th>Day</th><th>Person</th><th>Closeness Score</th></tr>
+      <tr><td>Mon</td><td>Mom</td><td>1 (Family)</td></tr>
+      <tr><td>Mon</td><td>Best friend</td><td>2 (Friend)</td></tr>
+      <tr><td>Mon</td><td>Classmate</td><td>3 (Acquaintance)</td></tr>
+      <tr><td>Mon</td><td>Barista</td><td>4 (Stranger)</td></tr>
+    </table>
+
+    <div class="callout green">
+      <strong>Note:</strong> You don't need to remember names — just the <strong>closeness score</strong> for each person.
+      A day where you saw your mom, a friend, and a stranger would be: <code>[1, 2, 4]</code>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>Adding the "people" Key to Your Data</h2>
+    </div>
+    <p>
+      We already have our sleep data stored as objects. Now we just need to <strong>add one new key</strong>
+      called <code>people</code> to each day. The value is an <strong>array of closeness scores</strong>:
+    </p>
+
+    <div class="code-block"><span class="cmt">// Before — just sleep data</span>
+{ <span class="key">"day"</span>: <span class="str">"Mon"</span>, <span class="key">"hours"</span>: <span class="num">8</span>, <span class="key">"restful"</span>: <span class="num">3</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span> }
+
+<span class="cmt">// After — with social data added!</span>
+{ <span class="key">"day"</span>: <span class="str">"Mon"</span>, <span class="key">"hours"</span>: <span class="num">8</span>, <span class="key">"restful"</span>: <span class="num">3</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span>,
+  <span class="key">"people"</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>] }</div>
+
+    <div class="callout blue">
+      <strong>What "people" stores:</strong> An array of numbers. Each number is one person you saw that day.<br>
+      The <strong>length</strong> of the array = how many people you interacted with.<br>
+      Each <strong>value</strong> (1–4) = how close that person is to you.
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>How the Orbit Drawing Works</h2>
+    </div>
+    <p>
+      We want to draw <strong>you</strong> as a dot in the center, and each person you interacted with
+      as a small dot orbiting around you. Closer relationships orbit nearer to the center:
+    </p>
+
+    <table>
+      <tr><th>Concept</th><th>What it does</th><th>Code</th></tr>
+      <tr>
+        <td><strong>Angle</strong></td>
+        <td>Spread people evenly around the circle</td>
+        <td><code>map(k, 0, numPeople, 0, TWO_PI)</code></td>
+      </tr>
+      <tr>
+        <td><strong>Distance</strong></td>
+        <td>1 (Family) = closest to you, 4 (Stranger) = farthest away</td>
+        <td><code>map(closeness, 1, 4, 45, 65)</code></td>
+      </tr>
+      <tr>
+        <td><strong>Position</strong></td>
+        <td>Convert angle + distance into x, y coordinates</td>
+        <td><code>cos(angle) * distance</code>, <code>sin(angle) * distance</code></td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <strong>Think of it like a solar system:</strong> You are the "sun" in the center.
+      Family members orbit close (like inner planets), and strangers orbit farther out (like distant planets).
+    </div>
+
+    <p>Here is the code that draws the orbit diagram. This goes <strong>inside</strong> the outer loop, right after the sleep circle code:</p>
+
+    <div class="code-block"><span class="cmt">// ── SOCIAL ORBITS ──────────────────────────────────────</span>
+<span class="fn">strokeWeight</span>(<span class="num">1.5</span>);
+
+<span class="cmt">// Draw "Self" dot in the center of this day's column</span>
+<span class="fn">fill</span>(<span class="num">50</span>);
+<span class="fn">circle</span>(center_X, center_Y, <span class="num">6</span>);
+<span class="fn">noFill</span>();
+
+<span class="cmt">// How many people did we interact with today?</span>
+<span class="kw">let</span> numPeople = dayData.<span class="key">people</span>.length;
+
+<span class="cmt">// Loop through each person</span>
+<span class="kw">for</span> (<span class="kw">let</span> k = <span class="num">0</span>; k &lt; numPeople; k++) {
+
+  <span class="cmt">// Get this person's closeness score (1–4)</span>
+  <span class="kw">let</span> closeness = dayData.<span class="key">people</span>[k];
+
+  <span class="cmt">// Spread people evenly in a full circle (0 to TWO_PI)
+  // e.g. with 4 people: 0°, 90°, 180°, 270°</span>
+  <span class="kw">let</span> angle = <span class="fn">map</span>(k, <span class="num">0</span>, numPeople, <span class="num">0</span>, TWO_PI);
+
+  <span class="cmt">// Family (1) orbits close, Strangers (4) orbit far
+  // 1 → 45px from center,  4 → 65px from center</span>
+  <span class="kw">let</span> distance = <span class="fn">map</span>(closeness, <span class="num">1</span>, <span class="num">4</span>, <span class="num">45</span>, <span class="num">65</span>);
+
+  <span class="cmt">// Convert the angle + distance into x, y position
+  // cos() gives the horizontal offset
+  // sin() gives the vertical offset</span>
+  <span class="kw">let</span> person_X = center_X + <span class="fn">cos</span>(angle) * distance;
+  <span class="kw">let</span> person_Y = center_Y + <span class="fn">sin</span>(angle) * distance;
+
+  <span class="cmt">// Faint connecting line back to "Self"</span>
+  <span class="fn">stroke</span>(<span class="num">200</span>);
+  <span class="fn">line</span>(center_X, center_Y, person_X, person_Y);
+
+  <span class="cmt">// Draw the person as a small filled dot</span>
+  <span class="fn">stroke</span>(<span class="num">50</span>);
+  <span class="fn">fill</span>(<span class="num">240</span>);  <span class="cmt">// Fill to cover the line behind the dot</span>
+  <span class="fn">circle</span>(person_X, person_Y, <span class="num">6</span>);
+  <span class="fn">noFill</span>();
+}</div>
+  </div>
+
+  <hr>
+
+  <!-- ══ STEP 4 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>Try It: See the Orbits</h2>
+    </div>
+    <p>
+      Add or remove people and change their closeness scores to see how the orbit diagram changes.
+    </p>
+
+    <div style="margin-bottom: 20px;">
+      <label style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--dim); display: block; margin-bottom: 8px;">
+        people: <span id="people-display" style="color: var(--green);">[1, 2, 3, 4]</span>
+      </label>
+      <div id="people-controls"></div>
+      <button id="add-person-btn" style="margin-top: 8px;">+ Add Person</button>
+    </div>
+
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-card-title">Result — <span>social orbit diagram</span></div>
+        <div id="demo-canvas"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ STEP 5 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 5</span>
+      <h2>Full Code Demo</h2>
+    </div>
+    <p>
+      Both links below contain the same code. The first version has everything inside <code>draw()</code>.
+      The second version organizes the drawing into <strong>helper functions</strong> like
+      <code>drawSleepRings()</code> and <code>drawSocialOrbit()</code> — same result, cleaner code!
+    </p>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/aZTzaRDAV" target="_blank" class="link-button">Full Code Demo →</a>
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/lCBw6I1xT" target="_blank" class="link-button alt">With Helper Functions →</a>
+    </div>
+
+    <div class="callout yellow" style="margin-top: 30px;">
+      <strong>Bonus Challenge:</strong> In the demo, the sleep rings and social orbits are drawn in separate rows.
+      Can you modify the code so the orbit dots are drawn <strong>on top of</strong> the sleep circles instead?<br><br>
+      <strong>Hint:</strong> Instead of using a separate <code>social_Y</code>, use the same <code>sleep_Y</code> for both!
+    </div>
+  </div>
+
+<script>
+let demoPeople = [1, 2, 3, 4];
+
+function updatePeopleDisplay() {
+  document.getElementById('people-display').textContent = '[' + demoPeople.join(', ') + ']';
+}
+
+function renderPeopleControls() {
+  let container = document.getElementById('people-controls');
+  container.innerHTML = '';
+  demoPeople.forEach(function(val, idx) {
+    let row = document.createElement('div');
+    row.className = 'people-input-row';
+    row.innerHTML =
+      '<label>Person ' + (idx + 1) + ':</label>' +
+      '<select data-idx="' + idx + '">' +
+      '<option value="1"' + (val === 1 ? ' selected' : '') + '>1 — Family</option>' +
+      '<option value="2"' + (val === 2 ? ' selected' : '') + '>2 — Friend</option>' +
+      '<option value="3"' + (val === 3 ? ' selected' : '') + '>3 — Acquaintance</option>' +
+      '<option value="4"' + (val === 4 ? ' selected' : '') + '>4 — Stranger</option>' +
+      '</select>' +
+      '<button class="remove-btn" data-idx="' + idx + '">✕</button>';
+    container.appendChild(row);
+  });
+
+  container.querySelectorAll('select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+      demoPeople[parseInt(this.dataset.idx)] = parseInt(this.value);
+      updatePeopleDisplay();
+      demoSketch.redraw();
+    });
+  });
+
+  container.querySelectorAll('.remove-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      demoPeople.splice(parseInt(this.dataset.idx), 1);
+      renderPeopleControls();
+      updatePeopleDisplay();
+      demoSketch.redraw();
+    });
+  });
+}
+
+document.getElementById('add-person-btn').addEventListener('click', function() {
+  if (demoPeople.length < 12) {
+    demoPeople.push(2);
+    renderPeopleControls();
+    updatePeopleDisplay();
+    demoSketch.redraw();
+  }
+});
+
+renderPeopleControls();
+updatePeopleDisplay();
+
+let demoSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(300, 300);
+    c.parent('demo-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    p.background("#09002F");
+    let cx = p.width / 2;
+    let cy = p.height / 2;
+
+    p.noFill();
+    p.stroke(255, 15);
+    p.strokeWeight(1);
+    p.circle(cx, cy, 60 * 2);
+    p.circle(cx, cy, 90 * 2);
+
+    p.fill(255, 40);
+    p.noStroke();
+    p.textSize(9);
+    p.textFont('monospace');
+    p.textAlign(p.LEFT, p.CENTER);
+    p.text('1 (closest)', cx + 63, cy);
+    p.text('4 (farthest)', cx + 93, cy);
+
+    p.fill(200);
+    p.noStroke();
+    p.textSize(9);
+    p.textAlign(p.CENTER, p.BOTTOM);
+    p.text('YOU', cx, cy - 8);
+
+    p.strokeWeight(1.5);
+    p.fill(50);
+    p.stroke(50);
+    p.circle(cx, cy, 8);
+    p.noFill();
+
+    let numPeople = demoPeople.length;
+    for (let k = 0; k < numPeople; k++) {
+      let closeness = demoPeople[k];
+      let angle = p.map(k, 0, numPeople, 0, p.TWO_PI);
+      let distance = p.map(closeness, 1, 4, 60, 90);
+
+      let px = cx + p.cos(angle) * distance;
+      let py = cy + p.sin(angle) * distance;
+
+      p.stroke(200);
+      p.strokeWeight(1.5);
+      p.line(cx, cy, px, py);
+
+      p.stroke(50);
+      p.fill(240);
+      p.circle(px, py, 6);
+      p.noFill();
+    }
+  };
+}, 'demo-canvas');
+</script>
+</body>
+</html>

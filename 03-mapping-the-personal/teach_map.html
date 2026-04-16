@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding map() — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+    .page-header .eyebrow {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+    }
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700; line-height: 1.0;
+      color: var(--white); letter-spacing: -0.02em;
+    }
+    .page-header h1 .fn { color: var(--green); }
+    .page-header .subtitle {
+      margin-top: 12px; color: var(--dim);
+      font-size: 0.95rem; font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson { max-width: 900px; margin: 0 auto 72px; }
+    .lesson-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+    .step-badge {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--black); background: var(--green);
+      padding: 3px 10px; flex-shrink: 0;
+    }
+    .lesson h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); letter-spacing: -0.01em; }
+    .lesson p { color: var(--dim); margin-bottom: 14px; font-size: 0.95rem; }
+    .lesson p strong { color: var(--white); font-weight: 600; }
+
+    /* ── INLINE CODE ─────────────────────────────────────────── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414; color: var(--green);
+      padding: 2px 7px; font-size: 0.87em; border: 1px solid #222;
+    }
+
+    /* ── CALLOUT ─────────────────────────────────────────────── */
+    .callout {
+      background: #111; border-left: 3px solid var(--green);
+      padding: 12px 18px; margin: 16px 0; font-size: 0.9rem; color: var(--gray);
+    }
+    .callout strong { color: var(--white); }
+    .callout.blue  { border-left-color: #60a5fa; }
+    .callout.green { border-left-color: var(--green); }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 64px auto; max-width: 900px; }
+
+    /* ── CODE BLOCK ──────────────────────────────────────────── */
+    .code-block {
+      background: #0e0e0e; border: 1px solid var(--border);
+      padding: 16px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--gray); line-height: 1.75;
+      overflow-x: auto; margin: 16px 0;
+    }
+    .code-block .keyword { color: #c084fc; }
+    .code-block .func    { color: #fbbf24; }
+    .code-block .num     { color: #60a5fa; }
+    .code-block .comment { color: #444; }
+    .code-block .str     { color: var(--green); }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card { background: var(--black); border: 1px solid var(--border); overflow: hidden; }
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--dim); padding: 8px 14px; border-bottom: 1px solid var(--border);
+    }
+    .canvas-card-title span { color: var(--green); font-weight: 600; }
+
+    .canvas-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
+
+    /* ── CONTROLS ────────────────────────────────────────────── */
+    .controls { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; margin-bottom: 20px; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; min-width: 220px; }
+    .control-group label {
+      font-size: 0.8rem; color: var(--dim); font-family: 'JetBrains Mono', monospace;
+    }
+    .control-group label span { color: var(--green); font-weight: 600; }
+    input[type="range"] { width: 100%; accent-color: var(--green); cursor: pointer; }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    .link-button {
+      display: inline-block; background: transparent;
+      border: 1px solid var(--green); color: var(--green);
+      text-decoration: none; padding: 7px 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      margin-top: 20px; transition: background 0.15s;
+    }
+    .link-button:hover { background: rgba(91, 223, 140, 0.08); }
+
+    /* ── TABLES ──────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    }
+    th {
+      background: #0e0e0e; color: var(--green); font-weight: 600;
+      padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 8px 14px; border-bottom: 1px solid var(--border); color: var(--gray); }
+    tr:hover td { background: #111; }
+
+    /* ── MAPPING CANVAS OVERFLOW ─────────────────────────────── */
+    #mapping-canvas-container { overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 3 · Mapping the Personal</div>
+    <h1>Understanding <span class="fn">map()</span></h1>
+    <p class="subtitle">How to evenly space values using one of the most useful functions in p5.js.</p>
+  </header>
+
+  <!-- ══ LESSON 1 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>The Problem: Drawing Concentric Circles</h2>
+    </div>
+    <p>
+      Let's say we want to draw <strong>a set of concentric circles</strong> — rings that all share the same center point
+      but get smaller as they go inward. We know two things:
+    </p>
+    <div class="callout">
+      The <strong>biggest circle</strong> (the outer ring) should have a diameter of <strong>350 px</strong>.
+      The <strong>smallest circle</strong> (the inner ring) should have a diameter of <strong>50 px</strong>.
+    </div>
+    <p>
+      If we only want <strong>2 circles</strong>, it's easy — one is 350 and the other is 50. Here's what that looks like:
+    </p>
+
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-card-title">The easy case — <span>2 circles</span></div>
+        <div id="problem-canvas-container"></div>
+      </div>
+    </div>
+
+    <p>
+      That's straightforward — we only need two sizes and we already know them.
+      But what if we want <strong>3 circles? Or 7?</strong> How do we figure out the diameter for each circle
+      so they are <strong>evenly spaced</strong> between 350 and 50?
+    </p>
+    <p>
+      We could try to do the math by hand every time… but that gets tedious fast.
+      What we really need is a way to say: <em>"I'm on circle number 3 out of 7 — what should my diameter be?"</em>
+    </p>
+  </div>
+
+  <!-- ══ LESSON 2 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>The Manual Way (So You Appreciate map!)</h2>
+    </div>
+    <p>
+      Let's try doing this by hand with <strong>3 circles</strong>.
+      Our range is <strong>350</strong> (max) down to <strong>50</strong> (min). That's a total span of <strong>300 px</strong>.
+    </p>
+    <p>
+      With 3 circles, we have <strong>2 gaps</strong> between them (always <code>numCircles - 1</code> gaps).
+      So each gap is <code>300 / 2 = 150 px</code>.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Circle #</th><th>i</th><th>Calculation</th><th>Diameter</th></tr>
+        <tr><td>1st (outer)</td><td>0</td><td>350 - (0 × 150)</td><td>350 px</td></tr>
+        <tr><td>2nd (middle)</td><td>1</td><td>350 - (1 × 150)</td><td>200 px</td></tr>
+        <tr><td>3rd (inner)</td><td>2</td><td>350 - (2 × 150)</td><td>50 px</td></tr>
+      </table>
+    </div>
+    <p>
+      That works! But imagine doing this every time the number of circles changes. With 7 circles, or a random number?
+      That's where <code>map()</code> comes in — <strong>it does all of this math for you</strong>.
+    </p>
+  </div>
+
+  <!-- ══ LESSON 3 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>Enter map() — Your Automatic Translator</h2>
+    </div>
+    <p>
+      Think of <code>map()</code> as a <strong>translator between two number lines</strong>.
+      You give it a value on one number line, and it tells you where that value falls on a different number line.
+    </p>
+    <div class="code-block">
+      <span class="func">map</span>(<span class="num">value</span>, <span class="num">start1</span>, <span class="num">stop1</span>, <span class="num">start2</span>, <span class="num">stop2</span>)
+    </div>
+    <div class="callout blue">
+      <strong>value</strong> — The number you want to convert (our loop counter <code>i</code>).<br>
+      <strong>start1, stop1</strong> — The range your value lives in (e.g., <code>0</code> to <code>numCircles - 1</code>).<br>
+      <strong>start2, stop2</strong> — The range you want to translate into (e.g., <code>350</code> to <code>50</code>).
+    </div>
+    <p>
+      So in our code, the call looks like this:
+    </p>
+    <div class="code-block">
+      <span class="keyword">let</span> currentDiameter = <span class="func">map</span>(i, <span class="num">0</span>, numCircles - <span class="num">1</span>, <span class="num">350</span>, <span class="num">50</span>);
+
+      <span class="comment">// When i = 0 (first circle)  → diameter = 350  (the biggest)</span>
+      <span class="comment">// When i = last              → diameter = 50   (the smallest)</span>
+      <span class="comment">// Everything in between      → evenly spaced!</span>
+    </div>
+    <div class="callout green">
+      <strong>Key insight:</strong> Because the output range goes from <strong>350 down to 50</strong>,
+      as <code>i</code> increases, the diameter <em>decreases</em>.
+      This is what draws the circles from the <strong>outside in</strong>.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 4 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>See It: The Two Number Lines</h2>
+    </div>
+    <p>
+      Use the slider below to change the number of circles. Watch how <code>map()</code> translates each
+      loop index <code>i</code> (the top number line) into a diameter (the bottom number line).
+      The connecting lines show you exactly how each value maps.
+    </p>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Number of Circles: <span id="mapping-count">7</span></label>
+        <input type="range" id="mapping-slider" min="2" max="10" value="7" step="1">
+      </div>
+    </div>
+
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-card-title">Mapping <span>i</span> → <span>diameter</span></div>
+        <div id="mapping-canvas-container"></div>
+      </div>
+    </div>
+
+    <div class="table-wrap" id="mapping-table-container"></div>
+  </div>
+
+  <hr>
+
+  <!-- ══ LESSON 5 ══════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 5</span>
+      <h2>See It: The Circles on the Canvas</h2>
+    </div>
+    <p>
+      Now let's see the actual result. Below is a live p5.js canvas drawing the concentric circles
+      using the <code>map()</code> values from above. Adjust the slider and watch the rings update in real time.
+    </p>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Number of Circles: <span id="circles-count">7</span></label>
+        <input type="range" id="circles-slider" min="2" max="10" value="7" step="1">
+      </div>
+    </div>
+
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-card-title">Result — <span>concentric circles</span></div>
+        <div id="sandbox-canvas-container"></div>
+      </div>
+    </div>
+
+    <p>
+      Notice how adding more circles makes the spacing tighter, and fewer circles makes the spacing wider.
+      <code>map()</code> handles the math automatically every time!
+    </p>
+
+    <div style="text-align: center;">
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/lGYc7CDj4" target="_blank" class="link-button">Open Code Demo in p5.js Editor →</a>
+    </div>
+  </div>
+
+<script>
+let mappingCircles = 7;
+let circlesCircles = 7;
+const MAX_D = 350;
+const MIN_D = 50;
+
+// ─── PROBLEM VISUALIZATION (Step 1) ────────────────────────────
+new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(400, 400);
+    c.parent('problem-canvas-container');
+    p.noLoop();
+  };
+
+  p.draw = function() {
+    p.background("#09002F");
+    p.noFill();
+    p.strokeWeight(5);
+    p.stroke("#3100FF");
+
+    let cx = p.width / 2;
+    let cy = p.height / 2;
+
+    p.circle(cx, cy, MAX_D);
+    p.circle(cx, cy, MIN_D);
+
+    let bigLineY = 65;
+    p.stroke(255, 117, 140, 180);
+    p.strokeWeight(2);
+    p.drawingContext.setLineDash([6, 4]);
+    let bigLeft  = cx - MAX_D / 2;
+    let bigRight = cx + MAX_D / 2;
+    p.line(bigLeft, bigLineY, bigRight, bigLineY);
+    p.drawingContext.setLineDash([]);
+
+    p.strokeWeight(2);
+    p.line(bigLeft, bigLineY - 6, bigLeft, bigLineY + 6);
+    p.line(bigRight, bigLineY - 6, bigRight, bigLineY + 6);
+
+    p.noStroke();
+    p.fill(255, 117, 140);
+    p.textFont('monospace');
+    p.textSize(14);
+    p.textAlign(p.CENTER, p.BOTTOM);
+    p.text('diameter = 350 px', cx, bigLineY - 8);
+
+    p.stroke(96, 165, 250, 180);
+    p.strokeWeight(2);
+    p.drawingContext.setLineDash([6, 4]);
+    let smallLeft  = cx - MIN_D / 2;
+    let smallRight = cx + MIN_D / 2;
+    p.line(smallLeft, cy + 18, smallRight, cy + 18);
+    p.drawingContext.setLineDash([]);
+
+    p.strokeWeight(2);
+    p.line(smallLeft, cy + 12, smallLeft, cy + 24);
+    p.line(smallRight, cy + 12, smallRight, cy + 24);
+
+    p.noStroke();
+    p.fill(96, 165, 250);
+    p.textSize(14);
+    p.textAlign(p.CENTER, p.TOP);
+    p.text('diameter = 50 px', cx, cy + 28);
+  };
+}, 'problem-canvas-container');
+
+// ─── MAPPING VISUALIZATION ─────────────────────────────────────
+let mappingSketch = new p5(function(p) {
+  const W = 780;
+  const H = 260;
+  const PAD_LEFT = 60;
+  const PAD_RIGHT = 60;
+  const LINE_W = W - PAD_LEFT - PAD_RIGHT;
+
+  p.setup = function() {
+    let c = p.createCanvas(W, H);
+    c.parent('mapping-canvas-container');
+    p.textFont('monospace');
+    p.noLoop();
+  };
+
+  p.draw = function() {
+    p.background(22, 22, 40);
+    let n = mappingCircles;
+
+    let topY = 60;
+    let botY = 200;
+
+    p.stroke(255, 255, 255, 40);
+    p.strokeWeight(2);
+    p.line(PAD_LEFT, topY, PAD_LEFT + LINE_W, topY);
+    p.line(PAD_LEFT, botY, PAD_LEFT + LINE_W, botY);
+
+    p.noStroke();
+    p.fill(255, 117, 140);
+    p.textSize(13);
+    p.textAlign(p.RIGHT, p.CENTER);
+    p.text('i', PAD_LEFT - 14, topY);
+
+    p.fill(96, 165, 250);
+    p.text('diam', PAD_LEFT - 14, botY);
+
+    for (let i = 0; i < n; i++) {
+      let t = n > 1 ? i / (n - 1) : 0;
+      let x = PAD_LEFT + t * LINE_W;
+      let diameter = p.map(i, 0, n - 1, MAX_D, MIN_D);
+
+      p.stroke(255, 117, 140);
+      p.strokeWeight(2);
+      p.line(x, topY - 8, x, topY + 8);
+
+      p.noStroke();
+      p.fill(255, 117, 140);
+      p.ellipse(x, topY, 10, 10);
+
+      p.textAlign(p.CENTER, p.BOTTOM);
+      p.textSize(12);
+      p.fill(255, 117, 140);
+      p.text(i, x, topY - 14);
+
+      p.stroke(96, 165, 250);
+      p.strokeWeight(2);
+      p.line(x, botY - 8, x, botY + 8);
+
+      p.noStroke();
+      p.fill(96, 165, 250);
+      p.ellipse(x, botY, 10, 10);
+
+      p.textAlign(p.CENTER, p.TOP);
+      p.textSize(12);
+      p.fill(96, 165, 250);
+      p.text(Math.round(diameter), x, botY + 14);
+
+      p.stroke(255, 255, 255, 35);
+      p.strokeWeight(1);
+      p.drawingContext.setLineDash([4, 4]);
+      p.line(x, topY + 10, x, botY - 10);
+      p.drawingContext.setLineDash([]);
+    }
+
+    p.noStroke();
+    p.fill(255, 255, 255, 50);
+    p.textSize(10);
+    p.textAlign(p.LEFT, p.CENTER);
+    p.text('first', PAD_LEFT, topY + 26);
+    p.textAlign(p.RIGHT, p.CENTER);
+    p.text('last', PAD_LEFT + LINE_W, topY + 26);
+  };
+}, 'mapping-canvas-container');
+
+function updateMappingTable(n) {
+  let html = '<table><tr><th>Circle</th><th>i</th><th>map(i, 0, ' + (n - 1) + ', 350, 50)</th><th>Diameter</th></tr>';
+  for (let i = 0; i < n; i++) {
+    let d = Math.round(350 + (50 - 350) * (i / (n - 1)));
+    if (n === 1) d = 350;
+    let label = i === 0 ? 'outer' : (i === n - 1 ? 'inner' : '');
+    html += '<tr><td>#' + (i + 1) + (label ? ' (' + label + ')' : '') + '</td><td>' + i + '</td><td>map(' + i + ', 0, ' + (n - 1) + ', 350, 50)</td><td>' + d + ' px</td></tr>';
+  }
+  html += '</table>';
+  document.getElementById('mapping-table-container').innerHTML = html;
+}
+
+updateMappingTable(7);
+
+document.getElementById('mapping-slider').addEventListener('input', function() {
+  mappingCircles = parseInt(this.value);
+  document.getElementById('mapping-count').textContent = mappingCircles;
+  mappingSketch.redraw();
+  updateMappingTable(mappingCircles);
+});
+
+
+// ─── CIRCLE RESULT VISUALIZATION ───────────────────────────────
+let circleSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(400, 400);
+    c.parent('sandbox-canvas-container');
+    p.noLoop();
+  };
+
+  p.draw = function() {
+    p.background("#09002F");
+    p.noFill();
+
+    let center_X = p.width / 2;
+    let center_Y = p.height / 2;
+    let n = circlesCircles;
+
+    p.strokeWeight(5);
+    p.stroke("#3100FF");
+
+    for (let i = 0; i < n; i++) {
+      let currentDiameter = MAX_D;
+      if (n > 1) {
+        currentDiameter = p.map(i, 0, n - 1, MAX_D, MIN_D);
+      }
+
+      p.circle(center_X, center_Y, currentDiameter);
+
+      p.push();
+      p.noStroke();
+      p.fill(255, 255, 255, 120);
+      p.textFont('monospace');
+      p.textSize(10);
+      p.textAlign(p.LEFT, p.CENTER);
+      let labelX = center_X + currentDiameter / 2 + 6;
+      if (labelX < p.width - 30) {
+        p.text(Math.round(currentDiameter), labelX, center_Y);
+      }
+      p.pop();
+    }
+  };
+}, 'sandbox-canvas-container');
+
+document.getElementById('circles-slider').addEventListener('input', function() {
+  circlesCircles = parseInt(this.value);
+  document.getElementById('circles-count').textContent = circlesCircles;
+  circleSketch.redraw();
+});
+</script>
+</body>
+</html>

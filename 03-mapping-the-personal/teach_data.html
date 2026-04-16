@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Sleep Data to Art — p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0a0a0a;
+      --green:  #5bdf8c;
+      --gray:   #d8d8d8;
+      --white:  #f0f0f0;
+      --dim:    #888;
+      --border: #222;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 60px 20px 100px;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 72px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+    }
+    .page-header .eyebrow {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+    }
+    .page-header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700; line-height: 1.0;
+      color: var(--white); letter-spacing: -0.02em;
+    }
+    .page-header h1 .fn { color: var(--green); }
+    .page-header .subtitle {
+      margin-top: 12px; color: var(--dim);
+      font-size: 0.95rem; font-weight: 400;
+    }
+
+    /* ── LESSON ──────────────────────────────────────────────── */
+    .lesson { max-width: 900px; margin: 0 auto 72px; }
+    .lesson-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+    .step-badge {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--black); background: var(--green);
+      padding: 3px 10px; flex-shrink: 0;
+    }
+    .lesson h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); letter-spacing: -0.01em; }
+    .lesson p { color: var(--dim); margin-bottom: 14px; font-size: 0.95rem; }
+    .lesson p strong { color: var(--white); font-weight: 600; }
+
+    /* ── INLINE CODE ─────────────────────────────────────────── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #141414; color: var(--green);
+      padding: 2px 7px; font-size: 0.87em; border: 1px solid #222;
+    }
+
+    /* ── CALLOUT ─────────────────────────────────────────────── */
+    .callout {
+      background: #111; border-left: 3px solid var(--green);
+      padding: 12px 18px; margin: 16px 0; font-size: 0.9rem; color: var(--gray);
+    }
+    .callout strong { color: var(--white); }
+    .callout.blue  { border-left-color: #60a5fa; }
+    .callout.green { border-left-color: var(--green); }
+    .callout.pink  { border-left-color: #f97316; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 64px auto; max-width: 900px; }
+
+    /* ── CODE BLOCK ──────────────────────────────────────────── */
+    .code-block {
+      background: #0e0e0e; border: 1px solid var(--border);
+      padding: 16px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; color: var(--gray); line-height: 1.75;
+      overflow-x: auto; margin: 16px 0; white-space: pre;
+    }
+    .code-block .kw   { color: #c084fc; }
+    .code-block .str  { color: var(--green); }
+    .code-block .num  { color: #60a5fa; }
+    .code-block .bool { color: #60a5fa; }
+    .code-block .cmt  { color: #444; }
+    .code-block .key  { color: #f97316; }
+    .code-block .fn   { color: #fbbf24; }
+
+    /* ── CANVAS CARD ─────────────────────────────────────────── */
+    .canvas-card { background: var(--black); border: 1px solid var(--border); overflow: hidden; }
+    .canvas-card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: var(--dim); padding: 8px 14px; border-bottom: 1px solid var(--border);
+    }
+    .canvas-card-title span { color: var(--green); font-weight: 600; }
+    .canvas-card-body { padding: 16px; }
+
+    .canvas-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
+
+    /* ── CONTROLS ────────────────────────────────────────────── */
+    .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; margin-bottom: 20px; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; min-width: 180px; }
+    .control-group label {
+      font-size: 0.8rem; color: var(--dim); font-family: 'JetBrains Mono', monospace;
+    }
+    .control-group label span { color: var(--green); font-weight: 600; }
+    input[type="range"] { width: 100%; accent-color: var(--green); cursor: pointer; }
+    select {
+      background: #0e0e0e; color: var(--white); border: 1px solid var(--border);
+      padding: 6px 10px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; cursor: pointer;
+    }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    button {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      background: transparent; border: 1px solid var(--green);
+      color: var(--green); padding: 7px 16px; cursor: pointer; transition: background 0.15s;
+    }
+    button:hover { background: rgba(91, 223, 140, 0.08); }
+
+    .link-button {
+      display: inline-block; background: transparent;
+      border: 1px solid var(--green); color: var(--green);
+      text-decoration: none; padding: 7px 16px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      margin-top: 20px; transition: background 0.15s;
+    }
+    .link-button:hover { background: rgba(91, 223, 140, 0.08); }
+    .link-button.alt { border-color: #fbbf24; color: #fbbf24; }
+    .link-button.alt:hover { background: rgba(251, 191, 36, 0.08); }
+
+    /* ── TABLES ──────────────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin: 16px 0;
+    }
+    th {
+      background: #0e0e0e; color: var(--green); font-weight: 600;
+      padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--gray); }
+    tr:hover td { background: #111; }
+    .mapping-table td:nth-child(1) { color: var(--green); font-weight: 600; }
+    .mapping-table td:nth-child(3) { color: var(--dim); }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="eyebrow">Code Demo · Week 3 · Mapping the Personal</div>
+    <h1>From Sleep Data to <span class="fn">Art</span></h1>
+    <p class="subtitle">Turn your weekly sleep log into generative visuals using objects and <code style="border:none;background:none;color:var(--green);padding:0">map()</code>.</p>
+  </header>
+
+  <!-- ══ STEP 1 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 1</span>
+      <h2>Data Collection: Your Weekly Sleep</h2>
+    </div>
+    <p>
+      For the last <strong>7 nights</strong>, you wrote down these <strong>3 data points</strong> for each night:
+    </p>
+
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Data Point</th>
+        <th>Type</th>
+        <th>What you wrote</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><strong>Hours Slept</strong></td>
+        <td>Number</td>
+        <td>e.g. <code>8</code>, <code>7.5</code>, <code>6</code></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Restfulness</strong></td>
+        <td>Number (1–3)</td>
+        <td>1 = Exhausted &nbsp; 2 = Okay &nbsp; 3 = Refreshed</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Dreamed?</strong></td>
+        <td>Boolean</td>
+        <td><code>true</code> = Yes &nbsp;&nbsp; <code>false</code> = No</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ══ STEP 2 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 2</span>
+      <h2>The Goal: Visualizing Your Data</h2>
+    </div>
+    <p>
+      We want to create a sketch where the visual properties of the circles are controlled by your real sleep data:
+    </p>
+
+    <table class="mapping-table">
+      <tr><th>Data Point</th><th>Controls</th><th>How it looks</th></tr>
+      <tr>
+        <td><strong>Hours Slept</strong></td>
+        <td>Number of circles</td>
+        <td>More hours = more rings</td>
+      </tr>
+      <tr>
+        <td><strong>Restfulness</strong></td>
+        <td>Stroke Weight (thickness)</td>
+        <td>Thicker lines = more rested</td>
+      </tr>
+      <tr>
+        <td><strong>Dreamed?</strong></td>
+        <td>Circle Color</td>
+        <td><code>true</code> = bright blue &nbsp; <code>false</code> = grey</td>
+      </tr>
+    </table>
+
+    <p>
+      But here is the problem: <strong>How do we store all of these different pieces of data together in our code?</strong>
+      How do we tell the computer that this specific number of hours, this restfulness, and this dream status all belong to Monday night?
+    </p>
+  </div>
+
+  <!-- ══ STEP 3 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 3</span>
+      <h2>The Solution: Objects</h2>
+    </div>
+    <p>
+      In JavaScript, this structure is officially called an <strong>Object</strong>.
+    </p>
+    <p>
+      Think of it like a real dictionary — each <strong>key</strong> (the word) has a <strong>value</strong> (the definition). You look up a key to get its value.
+    </p>
+
+    <div class="callout pink">
+      <strong>Fun Fact:</strong> Depending on the programming language, you might hear this structure called a <strong>Dictionary</strong> (in Python), a <strong>Hash Map</strong>, or an <strong>Associative Array</strong>. They all mean basically the same thing!
+    </div>
+
+    <div class="callout blue">
+      <strong>Key</strong> = The label or name (like <code>hours</code>)<br>
+      <strong>Value</strong> = The data stored under that label (like <code>8</code>)
+    </div>
+
+    <p>
+      Instead of creating separate variables that have no connection to each other, we can group them all into <strong>one object</strong>:
+    </p>
+
+    <div class="code-block"><span class="cmt">// Clean and organized in an object!</span>
+<span class="kw">let</span> sleepData = {
+  <span class="key">"day"</span>:      <span class="str">"Mon"</span>,
+  <span class="key">"hours"</span>:    <span class="num">8</span>,       <span class="cmt">// Controls the number of circles</span>
+  <span class="key">"restful"</span>:  <span class="num">3</span>,       <span class="cmt">// Controls the stroke weight</span>
+  <span class="key">"dreamed"</span>:  <span class="bool">true</span>      <span class="cmt">// Controls the color</span>
+};</div>
+
+    <div class="callout">
+      <strong>Syntax Rules:</strong><br>
+      • Wrap the whole thing in <strong>curly braces</strong> <code>{ }</code><br>
+      • Each entry is a <strong>key : value</strong> pair<br>
+      • Separate entries with <strong>commas</strong><br>
+      • To read a value later, use dot notation: <code>sleepData.hours</code>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ STEP 4 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 4</span>
+      <h2>Try It: See the Data Drive the Art</h2>
+    </div>
+    <p>
+      Adjust the sliders below to simulate different sleep data.
+      Watch how the object values change, and how that immediately updates the visual result.
+    </p>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>hours: <span id="hours-val">8</span></label>
+        <input type="range" id="hours-slider" min="2" max="10" value="8" step="1">
+      </div>
+      <div class="control-group">
+        <label>restful: <span id="restful-val">3</span></label>
+        <input type="range" id="restful-slider" min="1" max="3" value="3" step="1">
+      </div>
+      <div class="control-group">
+        <label>dreamed:</label>
+        <select id="dreamed-select">
+          <option value="true" selected>true</option>
+          <option value="false">false</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="code-block" id="live-dict"></div>
+
+    <div class="canvas-row">
+      <div class="canvas-card">
+        <div class="canvas-card-title">Result — <span>data mapped to visuals</span></div>
+        <div id="demo-canvas"></div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/kIyPOtgAH" target="_blank" class="link-button">Open Code Demo in p5.js Editor →</a>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ STEP 5 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 5</span>
+      <h2>Expanding to 7 Days: A List of Objects</h2>
+    </div>
+    <p>
+      So far we have represented <strong>one night</strong> of sleep as a single object.
+      But we collected data for <strong>7 nights</strong>. How do we store all of them?
+    </p>
+    <p>
+      The answer is a <strong>list</strong> (called an <strong>Array</strong> in JavaScript).
+      We can put multiple objects inside an array using <strong>square brackets</strong> <code>[ ]</code>,
+      with each object separated by a comma:
+    </p>
+
+    <div class="code-block"><span class="kw">let</span> sleepLog = [
+  { <span class="key">"day"</span>: <span class="str">"Mon"</span>, <span class="key">"hours"</span>: <span class="num">8</span>,   <span class="key">"restful"</span>: <span class="num">3</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span>  },
+  { <span class="key">"day"</span>: <span class="str">"Tue"</span>, <span class="key">"hours"</span>: <span class="num">6</span>,   <span class="key">"restful"</span>: <span class="num">1</span>, <span class="key">"dreamed"</span>: <span class="bool">false</span> },
+  { <span class="key">"day"</span>: <span class="str">"Wed"</span>, <span class="key">"hours"</span>: <span class="num">7</span>,   <span class="key">"restful"</span>: <span class="num">2</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span>  },
+  { <span class="key">"day"</span>: <span class="str">"Thu"</span>, <span class="key">"hours"</span>: <span class="num">5</span>,   <span class="key">"restful"</span>: <span class="num">1</span>, <span class="key">"dreamed"</span>: <span class="bool">false</span> },
+  { <span class="key">"day"</span>: <span class="str">"Fri"</span>, <span class="key">"hours"</span>: <span class="num">7</span>,   <span class="key">"restful"</span>: <span class="num">2</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span>  },
+  { <span class="key">"day"</span>: <span class="str">"Sat"</span>, <span class="key">"hours"</span>: <span class="num">9</span>,   <span class="key">"restful"</span>: <span class="num">3</span>, <span class="key">"dreamed"</span>: <span class="bool">false</span> },
+  { <span class="key">"day"</span>: <span class="str">"Sun"</span>, <span class="key">"hours"</span>: <span class="num">8</span>,   <span class="key">"restful"</span>: <span class="num">3</span>, <span class="key">"dreamed"</span>: <span class="bool">true</span>  }
+];</div>
+
+    <div class="callout green">
+      <strong>Key idea:</strong> Each item in the array is a complete object with all four keys.
+      We can loop through this array to draw one set of circles for each night!
+    </div>
+
+    <p>To access a specific night, use the <strong>index</strong> (starting from 0):</p>
+
+    <div class="code-block"><span class="kw">let</span> monday = sleepLog[<span class="num">0</span>];           <span class="cmt">// First item → Mon</span>
+<span class="kw">let</span> mondayHours = sleepLog[<span class="num">0</span>].<span class="key">hours</span>;  <span class="cmt">// → 8</span>
+
+<span class="kw">let</span> friday = sleepLog[<span class="num">4</span>];            <span class="cmt">// Fifth item → Fri</span>
+<span class="kw">let</span> fridayDream = sleepLog[<span class="num">4</span>].<span class="key">dreamed</span>; <span class="cmt">// → true</span></div>
+  </div>
+
+  <hr>
+
+  <!-- ══ STEP 6 ══════════════════════════════════════════════════ -->
+  <div class="lesson">
+    <div class="lesson-header">
+      <span class="step-badge">Step 6</span>
+      <h2>The Code</h2>
+    </div>
+    <p>
+      Here are two versions of the code in the p5.js editor. The <strong>complete solution</strong> shows how it all fits together.
+      The <strong>exercise version</strong> has blanks for you to fill in with your own sleep data.
+    </p>
+
+    <div class="callout green">
+      <strong>What to expect:</strong> When you run the code, each night gets its own column across the canvas.
+      You'll see 7 sets of circles side by side — that's your week of sleep visualized!
+    </div>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/VsGZ7T_Cq" target="_blank" class="link-button">Complete Solution →</a>
+      <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/uLt8zu3-_" target="_blank" class="link-button alt">Exercise — Fill in the Blanks →</a>
+    </div>
+  </div>
+
+<script>
+let PALETTE = ["#3100FF", "#9F9DAA"];
+let demoHours = 8;
+let demoRestful = 3;
+let demoDreamed = true;
+
+function updateDictDisplay() {
+  let el = document.getElementById('live-dict');
+  let dreamStr = demoDreamed ? '<span class="bool">true</span>' : '<span class="bool">false</span>';
+  el.innerHTML =
+    '<span class="kw">let</span> sleepData = {\n' +
+    '  <span class="key">"day"</span>:      <span class="str">"Mon"</span>,\n' +
+    '  <span class="key">"hours"</span>:    <span class="num">' + demoHours + '</span>,\n' +
+    '  <span class="key">"restful"</span>:  <span class="num">' + demoRestful + '</span>,\n' +
+    '  <span class="key">"dreamed"</span>:  ' + dreamStr + '\n' +
+    '};';
+}
+
+updateDictDisplay();
+
+let demoSketch = new p5(function(p) {
+  p.setup = function() {
+    let c = p.createCanvas(400, 400);
+    c.parent('demo-canvas');
+    p.noLoop();
+  };
+  p.draw = function() {
+    p.background("#09002F");
+    p.noFill();
+    let cx = p.width / 2;
+    let cy = p.height / 2;
+    let maxD = 350, minD = 50;
+
+    let sw = p.map(demoRestful, 1, 3, 2, 10);
+    p.strokeWeight(sw);
+    p.stroke(demoDreamed ? PALETTE[0] : PALETTE[1]);
+
+    for (let i = 0; i < demoHours; i++) {
+      let d = maxD;
+      if (demoHours > 1) {
+        d = p.map(i, 0, demoHours - 1, maxD, minD);
+      }
+      p.circle(cx, cy, d);
+    }
+  };
+}, 'demo-canvas');
+
+document.getElementById('hours-slider').addEventListener('input', function() {
+  demoHours = parseInt(this.value);
+  document.getElementById('hours-val').textContent = demoHours;
+  updateDictDisplay();
+  demoSketch.redraw();
+});
+
+document.getElementById('restful-slider').addEventListener('input', function() {
+  demoRestful = parseInt(this.value);
+  document.getElementById('restful-val').textContent = demoRestful;
+  updateDictDisplay();
+  demoSketch.redraw();
+});
+
+document.getElementById('dreamed-select').addEventListener('change', function() {
+  demoDreamed = this.value === 'true';
+  updateDictDisplay();
+  demoSketch.redraw();
+});
+</script>
+</body>
+</html>
