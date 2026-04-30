@@ -101,12 +101,12 @@ export default function ActivityLog({ nodes, connections, loaded }: Props) {
 
   return (
     <div className="fixed bottom-5 left-5 z-10 w-56 pointer-events-none select-none">
-      <p className="text-[9px] text-[#C9C3B5] font-light uppercase tracking-widest mb-2">recent</p>
+      <p className="text-[9px] text-[#B0A890] font-light uppercase tracking-widest mb-2">recent</p>
       <ul className="space-y-1.5">
         {entries.map(e => (
           <li key={e.id} className="flex items-baseline justify-between gap-2">
-            <span className="text-[11px] font-light text-[#8B8378] leading-snug truncate">{e.text}</span>
-            <span className="text-[10px] text-[#C9C3B5] flex-shrink-0 tabular-nums">{relTime(e.at)}</span>
+            <span className="text-[11px] font-light text-[#9A9080] leading-snug truncate">{e.text}</span>
+            <span className="text-[10px] text-[#B0A890] flex-shrink-0 tabular-nums">{relTime(e.at)}</span>
           </li>
         ))}
       </ul>

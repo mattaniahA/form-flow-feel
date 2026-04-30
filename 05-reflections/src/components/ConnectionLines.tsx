@@ -41,7 +41,7 @@ export default function ConnectionLines({ connections, nodes, posMap, hoveredNod
             key={conn.id}
             d={bezierPath(fromPos, toPos)}
             fill="none"
-            stroke="#8B8378"
+            stroke="#6B5A3A"
             strokeWidth={isHighlighted ? 1.2 : 0.7}
             opacity={opacity}
             strokeLinecap="round"

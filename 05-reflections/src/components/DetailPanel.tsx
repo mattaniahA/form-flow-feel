@@ -182,26 +182,26 @@ export default function DetailPanel({
         onClick={onClose}
       />
 
-      <div className="fixed right-0 top-0 h-full w-80 z-30 bg-[#F5F1E8] border-l border-[#C9C3B5] shadow-xl flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-80 z-30 bg-[#F5F0E4] border-l border-[#D0C8B0] shadow-xl flex flex-col">
         {/* Header */}
-        <div className="p-5 border-b border-[#C9C3B5]">
+        <div className="p-5 border-b border-[#D0C8B0]">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <span className="text-xs text-[#8B8378] font-light uppercase tracking-wider">
+              <span className="text-xs text-[#9A9080] font-light uppercase tracking-wider">
                 {editing ? TYPE_LABELS[editType] : TYPE_LABELS[node.type]}
               </span>
-              <h3 className="text-base font-light text-[#2A2520] mt-0.5 leading-snug">
+              <h3 className="text-base font-light text-[#3A3020] mt-0.5 leading-snug">
                 {editing
-                  ? (editTitle || <span className="text-[#A9A39D]">Title…</span>)
+                  ? (editTitle || <span className="text-[#A89880]">Title…</span>)
                   : node.title}
               </h3>
             </div>
             <button
               onClick={onClose}
-              className="text-[#A9A39D] hover:text-[#2A2520] text-xl leading-none flex-shrink-0 cursor-pointer mt-0.5"
+              className="text-[#A89880] hover:text-[#3A3020] text-xl leading-none flex-shrink-0 cursor-pointer mt-0.5"
             >×</button>
           </div>
-          <p className="text-xs text-[#8B8378] font-light mt-2">added by {node.created_by}</p>
+          <p className="text-xs text-[#9A9080] font-light mt-2">added by {node.created_by}</p>
         </div>
 
         {editing ? (
@@ -209,7 +209,7 @@ export default function DetailPanel({
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
             {/* Type */}
             <div>
-              <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">Type</p>
+              <p className="text-xs text-[#9A9080] font-light uppercase tracking-wider mb-1.5">Type</p>
               <div className="flex gap-2">
                 {(Object.keys(TYPE_LABELS) as NodeType[]).map(t => (
                   <button
@@ -218,8 +218,8 @@ export default function DetailPanel({
                     onClick={() => setEditType(t)}
                     className={`flex-1 py-1.5 text-xs font-light rounded border transition-colors cursor-pointer
                       ${editType === t
-                        ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
-                        : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
+                        ? 'border-[#6B5A3A] bg-[#EDE5D0] text-[#6B5A3A]'
+                        : 'border-[#D0C8B0] text-[#6B6050] hover:bg-[#ECE7D5]'}`}
                   >{TYPE_LABELS[t]}</button>
                 ))}
               </div>
@@ -232,9 +232,9 @@ export default function DetailPanel({
                   type="checkbox"
                   checked={editIsStudent}
                   onChange={e => setEditIsStudent(e.target.checked)}
-                  className="w-3.5 h-3.5 accent-[#8B8378] cursor-pointer"
+                  className="w-3.5 h-3.5 accent-[#6B5A3A] cursor-pointer"
                 />
-                <span className="text-sm font-light text-[#4A4540]">student</span>
+                <span className="text-sm font-light text-[#5A4A30]">student</span>
               </label>
             )}
 
@@ -246,9 +246,9 @@ export default function DetailPanel({
                 value={editTitle}
                 onChange={e => setEditTitle(e.target.value.slice(0, 80))}
                 placeholder="Title (required)"
-                className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
+                className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A]"
               />
-              <p className="text-right text-xs text-[#A9A39D] mt-1">{editTitle.length}/80</p>
+              <p className="text-right text-xs text-[#A89880] mt-1">{editTitle.length}/80</p>
             </div>
 
             {/* Description */}
@@ -257,7 +257,7 @@ export default function DetailPanel({
               onChange={e => setEditDescription(e.target.value.slice(0, 400))}
               placeholder="Description (optional)"
               rows={4}
-              className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378] resize-none"
+              className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A] resize-none"
             />
 
             {/* URL */}
@@ -266,13 +266,13 @@ export default function DetailPanel({
               value={editUrl}
               onChange={e => setEditUrl(e.target.value)}
               placeholder="URL (optional)"
-              className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
+              className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A]"
             />
 
             {/* Images */}
             <div>
-              <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">
-                Images <span className="normal-case text-[#A9A39D]">(optional · max 5 MB each)</span>
+              <p className="text-xs text-[#9A9080] font-light uppercase tracking-wider mb-1.5">
+                Images <span className="normal-case text-[#A89880]">(optional · max 5 MB each)</span>
               </p>
               {images.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -281,7 +281,7 @@ export default function DetailPanel({
                       <img
                         src={img.url}
                         alt=""
-                        className="w-20 h-20 object-cover rounded border border-[#C9C3B5]"
+                        className="w-20 h-20 object-cover rounded border border-[#D0C8B0]"
                       />
                       <button
                         type="button"
@@ -294,7 +294,7 @@ export default function DetailPanel({
                 </div>
               )}
               <label className="block cursor-pointer">
-                <span className={`w-full py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors flex items-center justify-center gap-1 ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                <span className={`w-full py-1.5 text-xs font-light text-[#6B6050] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors flex items-center justify-center gap-1 ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                   {imageUploading ? 'Uploading…' : '+ Add image'}
                 </span>
                 <input
@@ -309,8 +309,8 @@ export default function DetailPanel({
 
             {/* Week */}
             <div>
-              <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">
-                Week <span className="normal-case text-[#A9A39D]">(optional)</span>
+              <p className="text-xs text-[#9A9080] font-light uppercase tracking-wider mb-1.5">
+                Week <span className="normal-case text-[#A89880]">(optional)</span>
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {ARC_NODES.map(an => (
@@ -320,8 +320,8 @@ export default function DetailPanel({
                     onClick={() => setEditArcNode(editArcNode === an.id ? null : an.id as ArcNode)}
                     className={`px-2.5 py-1 text-xs font-light rounded border transition-colors cursor-pointer
                       ${editArcNode === an.id
-                        ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
-                        : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
+                        ? 'border-[#6B5A3A] bg-[#EDE5D0] text-[#6B5A3A]'
+                        : 'border-[#D0C8B0] text-[#6B6050] hover:bg-[#ECE7D5]'}`}
                   >{an.label}</button>
                 ))}
               </div>
@@ -340,24 +340,24 @@ export default function DetailPanel({
                     src={img.url}
                     alt=""
                     onClick={() => setLightboxIndex(i)}
-                    className="w-20 h-20 object-cover rounded border border-[#C9C3B5] cursor-zoom-in flex-shrink-0"
+                    className="w-20 h-20 object-cover rounded border border-[#D0C8B0] cursor-zoom-in flex-shrink-0"
                   />
                 ))}
               </div>
             )}
 
             {node.type === 'person' && node.is_student && (
-              <p className="text-xs text-[#7D9176] font-light tracking-wide">◎ student</p>
+              <p className="text-xs text-[#3D7A5A] font-light tracking-wide">◎ student</p>
             )}
 
             {node.is_student && !canEdit && (
-              <p className="text-xs text-[#A9A39D] font-light italic">
+              <p className="text-xs text-[#A89880] font-light italic">
                 Enter &ldquo;{node.title}&rdquo; as your name to edit this node.
               </p>
             )}
 
             {node.description && (
-              <p className="text-sm font-light text-[#4A4540] leading-relaxed whitespace-pre-wrap">{node.description}</p>
+              <p className="text-sm font-light text-[#5A4A30] leading-relaxed whitespace-pre-wrap">{node.description}</p>
             )}
 
             {node.external_url && (
@@ -365,29 +365,29 @@ export default function DetailPanel({
                 href={/^https?:\/\//i.test(node.external_url) ? node.external_url : `https://${node.external_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xs text-[#8B8378] underline underline-offset-2 hover:text-[#2A2520] break-all"
+                className="block text-xs text-[#9A9080] underline underline-offset-2 hover:text-[#3A3020] break-all"
               >{node.external_url}</a>
             )}
 
             <div>
-              <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-2">
+              <p className="text-xs text-[#9A9080] font-light uppercase tracking-wider mb-2">
                 Connections ({connectedEntries.length})
               </p>
               {connectedEntries.length === 0 ? (
-                <p className="text-xs text-[#A9A39D] font-light">None yet</p>
+                <p className="text-xs text-[#A89880] font-light">None yet</p>
               ) : (
                 <ul className="space-y-2">
                   {connectedEntries.map(({ conn, other }) => (
                     <li key={conn.id} className="flex items-start justify-between gap-2 group">
-                      <span className="flex items-start gap-2 text-sm font-light text-[#4A4540] min-w-0">
-                        <span className="text-[#C9C3B5] mt-px flex-shrink-0">—</span>
+                      <span className="flex items-start gap-2 text-sm font-light text-[#5A4A30] min-w-0">
+                        <span className="text-[#C0B8A0] mt-px flex-shrink-0">—</span>
                         <span className="truncate">{other.title}</span>
                       </span>
                       {userName && conn.created_by === userName && (
                         <button
                           onClick={() => handleUnlink(conn.id)}
                           title="Unlink"
-                          className="flex-shrink-0 text-[#C9C3B5] hover:text-[#8B8378] text-sm leading-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
+                          className="flex-shrink-0 text-[#C0B8A0] hover:text-[#9A9080] text-sm leading-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
                         >×</button>
                       )}
                     </li>
@@ -399,17 +399,17 @@ export default function DetailPanel({
         )}
 
         {/* Footer */}
-        <div className="p-5 border-t border-[#C9C3B5] space-y-2">
+        <div className="p-5 border-t border-[#D0C8B0] space-y-2">
           {editing ? (
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(false)}
-                className="flex-1 py-2 text-sm font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+                className="flex-1 py-2 text-sm font-light text-[#6B6050] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors cursor-pointer"
               >Cancel</button>
               <button
                 onClick={handleSave}
                 disabled={!editTitle.trim() || saving}
-                className="flex-1 py-2 text-sm font-light text-[#2A2520] border border-[#8B8378] rounded bg-[#EDE9E0] hover:bg-[#E0DAD0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                className="flex-1 py-2 text-sm font-light text-[#3A3020] border border-[#6B5A3A] rounded bg-[#6B5A3A] text-white hover:bg-[#5A4A2E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >{saving ? 'Saving…' : 'Save'}</button>
             </div>
           ) : (
@@ -417,20 +417,20 @@ export default function DetailPanel({
               <button
                 onClick={onStartConnect}
                 disabled={connectMode}
-                className="w-full py-2 text-sm font-light text-[#2A2520] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full py-2 text-sm font-light text-[#3A3020] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >{connectMode ? 'Click another object…' : 'Link to another object'}</button>
 
               {canEdit && (
                 <button
                   onClick={startEdit}
-                  className="w-full py-2 text-sm font-light text-[#2A2520] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+                  className="w-full py-2 text-sm font-light text-[#3A3020] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors cursor-pointer"
                 >Edit this object</button>
               )}
 
               {canEdit && !confirmDelete && (
                 <button
                   onClick={() => setConfirmDelete(true)}
-                  className="w-full py-2 text-sm font-light text-[#A9A39D] hover:text-red-400 border border-[#C9C3B5] rounded hover:border-red-300 transition-colors cursor-pointer"
+                  className="w-full py-2 text-sm font-light text-[#A89880] hover:text-red-400 border border-[#D0C8B0] rounded hover:border-red-300 transition-colors cursor-pointer"
                 >Delete this object</button>
               )}
 
@@ -438,7 +438,7 @@ export default function DetailPanel({
                 <div className="flex gap-2">
                   <button
                     onClick={() => setConfirmDelete(false)}
-                    className="flex-1 py-2 text-sm font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+                    className="flex-1 py-2 text-sm font-light text-[#6B6050] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors cursor-pointer"
                   >Cancel</button>
                   <button
                     onClick={handleDeleteNode}

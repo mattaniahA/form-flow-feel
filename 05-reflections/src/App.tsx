@@ -147,7 +147,7 @@ export default function App() {
     <>
       {!userName && <NameModal onSubmit={setUserName} />}
 
-      <p className="fixed top-5 left-5 z-10 text-sm font-light text-[#6B6560] pointer-events-none select-none" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <p className="fixed top-5 left-5 z-10 text-sm font-medium text-[#6B5A3A] pointer-events-none select-none" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         Form / Flow / Feel
       </p>
 
@@ -159,8 +159,8 @@ export default function App() {
               ['click', 'explore or connect'],
               ['scroll / drag', 'navigate'],
             ].map(([action, desc]) => (
-              <li key={action} className="text-[11px] font-light text-[#8B8378] leading-snug">
-                <span className="text-[#6B6560]">{action}</span> — {desc}
+              <li key={action} className="text-[11px] font-light text-[#9A9080] leading-snug">
+                <span className="text-[#5A4A30]">{action}</span> — {desc}
               </li>
             ))}
           </ul>
@@ -170,7 +170,7 @@ export default function App() {
       <ActivityLog nodes={nodes} connections={connections} loaded={loaded} />
 
       {connectMode && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-[#2A2520] text-[#F5F1E8] text-sm font-light px-5 py-2 rounded-full shadow-lg pointer-events-none">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-[#6B5A3A] text-white text-sm font-light px-5 py-2 rounded-full shadow-lg pointer-events-none">
           Click another object to connect — Escape to cancel
         </div>
       )}
@@ -178,7 +178,7 @@ export default function App() {
       {/* Settings — bottom-right */}
       <button
         onClick={() => setShowSettings(s => !s)}
-        className="fixed bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] bg-[#F5F1E8] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+        className="fixed bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B5A3A] bg-[#F5F0E4] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors cursor-pointer"
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         {isAdmin ? '⚙ admin' : '⚙ settings'}
@@ -225,7 +225,7 @@ export default function App() {
               fontSize={11}
               fontWeight={400}
               fontFamily="Inter, system-ui, sans-serif"
-              fill="#2A2520"
+              fill="#3A3020"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
             >
               {label}

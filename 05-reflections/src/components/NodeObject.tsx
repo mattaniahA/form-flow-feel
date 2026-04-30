@@ -3,9 +3,9 @@ import { ARC_NODES, ZONE_RADIUS, STUDENT_RING_R, PENTAGON_CENTER } from './ArcCa
 import type { GardenNode } from '../lib/supabase'
 
 const TYPE_COLORS: Record<GardenNode['type'], string> = {
-  project: '#D9A78E',
-  person:  '#A8B89A',
-  topic:   '#9BA8B8',
+  project: '#C4856E',
+  person:  '#6B9AB8',
+  topic:   '#7B9060',
 }
 
 function idHash(id: string): number {
@@ -124,7 +124,7 @@ export default function NodeObject({ node, onClick, isConnectSource, connectMode
       onClick={() => onClick?.(node)}
     >
       {isConnectSource && (
-        <circle r={22} fill="none" stroke="#2A2520" strokeWidth={1.2} strokeDasharray="3 3" opacity={0.5} />
+        <circle r={22} fill="none" stroke="#3A3020" strokeWidth={1.2} strokeDasharray="3 3" opacity={0.5} />
       )}
       {node.type === 'project' && <Flower color={color} />}
       {node.type === 'person'  && <PersonCircle color={color} initial={initial} />}

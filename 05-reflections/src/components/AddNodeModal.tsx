@@ -60,10 +60,10 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
       onClick={onClose}
     >
       <div
-        className="bg-[#F5F1E8] border border-[#C9C3B5] rounded-lg p-6 w-[480px] shadow-lg"
+        className="bg-[#F5F0E4] border border-[#D0C8B0] rounded-lg p-6 w-[480px] shadow-lg"
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-base font-light text-[#2A2520] mb-5">Add to the garden</h2>
+        <h2 className="text-base font-light text-[#3A3020] mb-5">Add to the garden</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type */}
@@ -75,8 +75,8 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
                 onClick={() => setType(t)}
                 className={`flex-1 py-2 text-sm font-light rounded border transition-colors cursor-pointer
                   ${type === t
-                    ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
-                    : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
+                    ? 'border-[#6B5A3A] bg-[#EDE5D0] text-[#6B5A3A]'
+                    : 'border-[#D0C8B0] text-[#6B6050] hover:bg-[#ECE7D5]'}`}
               >
                 {TYPE_LABELS[t]}
               </button>
@@ -90,9 +90,9 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
                 type="checkbox"
                 checked={isStudent}
                 onChange={e => setIsStudent(e.target.checked)}
-                className="w-3.5 h-3.5 accent-[#8B8378] cursor-pointer"
+                className="w-3.5 h-3.5 accent-[#6B5A3A] cursor-pointer"
               />
-              <span className="text-sm font-light text-[#4A4540]">student</span>
+              <span className="text-sm font-light text-[#5A4A30]">student</span>
             </label>
           )}
 
@@ -104,9 +104,9 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
               value={title}
               onChange={e => setTitle(e.target.value.slice(0, 80))}
               placeholder="Title (required)"
-              className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
+              className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A]"
             />
-            <p className="text-right text-xs text-[#A9A39D] mt-1">{title.length}/80</p>
+            <p className="text-right text-xs text-[#A89880] mt-1">{title.length}/80</p>
           </div>
 
           {/* Description */}
@@ -115,7 +115,7 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
             onChange={e => setDescription(e.target.value.slice(0, 400))}
             placeholder="Description (optional)"
             rows={3}
-            className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378] resize-none"
+            className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A] resize-none"
           />
 
           {/* URL */}
@@ -124,14 +124,14 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
             value={url}
             onChange={e => setUrl(e.target.value)}
             placeholder="URL (optional)"
-            className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
+            className="w-full border border-[#D0C8B0] bg-[#F5F0E4]/60 rounded px-3 py-2 text-sm text-[#3A3020] placeholder-[#A89880] outline-none focus:border-[#6B5A3A]"
           />
 
           {/* Arc node — hidden for students, who always land on the outer ring */}
           {!(type === 'person' && isStudent) && (
             <div>
-              <p className="text-xs text-[#8B8378] font-light mb-1.5">
-                Week <span className="text-[#A9A39D]">(optional)</span>
+              <p className="text-xs text-[#9A9080] font-light mb-1.5">
+                Week <span className="text-[#A89880]">(optional)</span>
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {ARC_NODES.map(an => (
@@ -141,15 +141,15 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
                     onClick={() => setArcNode(arcNode === an.id ? null : an.id as ArcNode)}
                     className={`px-2.5 py-1 text-xs font-light rounded border transition-colors cursor-pointer
                       ${arcNode === an.id
-                        ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
-                        : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
+                        ? 'border-[#6B5A3A] bg-[#EDE5D0] text-[#6B5A3A]'
+                        : 'border-[#D0C8B0] text-[#6B6050] hover:bg-[#ECE7D5]'}`}
                   >
                     {an.label}
                   </button>
                 ))}
               </div>
               {!arcNode && (
-                <p className="text-xs text-[#A9A39D] mt-1.5">
+                <p className="text-xs text-[#A89880] mt-1.5">
                   No week selected — will appear in the center of the canvas.
                 </p>
               )}
@@ -162,14 +162,14 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 text-sm font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+              className="flex-1 py-2 text-sm font-light text-[#6B6050] border border-[#D0C8B0] rounded hover:bg-[#ECE7D5] transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim() || submitting}
-              className="flex-1 py-2 text-sm font-light text-[#2A2520] border border-[#8B8378] rounded bg-[#EDE9E0] hover:bg-[#E0DAD0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 py-2 text-sm font-light text-white bg-[#6B5A3A] border border-[#6B5A3A] rounded hover:bg-[#5A4A2E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               {submitting ? 'Adding…' : 'Add'}
             </button>

@@ -170,7 +170,7 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
   const { x, y, scale } = transform
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#F5F1E8]">
+    <div className="relative w-full h-screen overflow-hidden" style={{ background: 'radial-gradient(ellipse 75% 65% at 18% 22%, rgba(201,160,74,0.16) 0%, transparent 100%), radial-gradient(ellipse 70% 60% at 85% 82%, rgba(184,112,96,0.13) 0%, transparent 100%), radial-gradient(ellipse 65% 58% at 82% 12%, rgba(122,144,96,0.13) 0%, transparent 100%), #E8DFC8' }}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
@@ -197,10 +197,10 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
             cy={PENTAGON_CENTER.y}
             r={STUDENT_RING_R}
             fill="none"
-            stroke="#A8B89A"
+            stroke="#6B5A3A"
             strokeWidth={1}
             strokeDasharray="3 8"
-            opacity={0.35}
+            opacity={0.20}
           />
 
           {/* Zone circles */}
@@ -211,7 +211,7 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
               cy={node.y}
               r={ZONE_RADIUS}
               fill="none"
-              stroke="#8B8378"
+              stroke="#6B5A3A"
               strokeWidth={1}
               strokeDasharray="4 6"
               opacity={0.45}
@@ -222,21 +222,21 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
           <path
             d={ARC_PATH}
             fill="none"
-            stroke="#8B8378"
-            strokeWidth={1.2}
+            stroke="#6B5A3A"
+            strokeWidth={1.5}
             strokeLinejoin="round"
-            opacity={0.25}
+            opacity={0.35}
           />
 
           {/* Node dots + curved labels */}
           {ARC_NODES.map(node => (
             <g key={node.id}>
-              <circle cx={node.x} cy={node.y} r={5} fill="#8B8378" opacity={0.7} />
+              <circle cx={node.x} cy={node.y} r={5} fill="#6B5A3A" opacity={0.6} />
               <text
                 fontFamily="Inter, system-ui, sans-serif"
-                fontWeight={300}
+                fontWeight={400}
                 fontSize={12}
-                fill="#4A4540"
+                fill="#6B5A3A"
                 letterSpacing={0.5}
                 style={{ userSelect: 'none' }}
               >
