@@ -92,12 +92,13 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
 
   const onMouseMove = useCallback((e: MouseEvent<SVGSVGElement>) => {
     if (!drag.current) return
+    const { startX, startY, ox, oy } = drag.current
     const rect = svgRef.current!.getBoundingClientRect()
     const scaleRatio = CANVAS_W / rect.width
-    const dx = (e.clientX - drag.current.startX) * scaleRatio
-    const dy = (e.clientY - drag.current.startY) * scaleRatio
+    const dx = (e.clientX - startX) * scaleRatio
+    const dy = (e.clientY - startY) * scaleRatio
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved.current = true
-    setTransform(prev => ({ ...prev, x: drag.current!.ox + dx, y: drag.current!.oy + dy }))
+    setTransform(prev => ({ ...prev, x: ox + dx, y: oy + dy }))
   }, [])
 
   const toCanvasCoords = useCallback((clientX: number, clientY: number) => {
