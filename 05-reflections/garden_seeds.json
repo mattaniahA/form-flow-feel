@@ -1,0 +1,790 @@
+{
+  "_meta": {
+    "description": "Seed content for the Form/Flow/Feel closing garden. Extracted from Week 1–4 lecture scripts plus the unincorporated projects from screenshot. All entries authored by Mattaniah; students will add their own on top.",
+    "totals": {
+      "systems": 14,
+      "repetition": 16,
+      "personal": 15,
+      "world": 20,
+      "reflections": 9,
+      "_total_nodes": 74,
+      "_total_connections": 60
+    },
+    "version": "1.0"
+  },
+  "nodes": [
+    {
+      "type": "person",
+      "title": "Sol LeWitt",
+      "description": "Conceptual artist who authored wall drawings as instructions — sometimes a single sentence — and let others execute them. The rule was fixed, the outcome wasn't. The gap between rule and result is where something interesting lives.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Wall Drawings",
+      "description": "Sol LeWitt's instructional artworks. The same instruction produces different works in every space, every time. A demonstration that authoring conditions and authoring outcomes are different acts.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Genevieve von Petzinger",
+      "description": "Paleoanthropologist who catalogued cave paintings across Europe and identified 32 geometric signs repeated across an entire continent over 30,000 years. Her research reframed what we think of as 'designed.'",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "32 Geometric Signs",
+      "description": "Marks repeated across European caves over 30,000 years. Nobody organized this — the constraints (body, tool, surface, dark, the impulse to mark) were the authors. What emergence looks like: form converging from below.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Pedro Stolf",
+      "description": "Queer Brazilian designer and illustrator. Built Synthopsis, a writing system from scratch. The driving question: in what ways can we shape thinking through conscious refinement of our tools?",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Synthopsis",
+      "description": "A complete writing system designed from the ground up. Grammar borrowed from circuits, cells, and orbits. Sentences as snowflakes; tense as orbital position; meaning radiating outward from a central subject. Synthetic + opsis: meaning without sound.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Conditional Design",
+      "description": "Late-2000s collective of designers and performers exploring 'human programming' — low-tech generative design through rules, processes, and shared execution. The manifesto behind the Week 1 warmup.",
+      "arc_node": "systems",
+      "external_url": "https://conditionaldesign.org",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Mark Applebaum",
+      "description": "Composer and inventor of handbuilt sound-sculptures. Wrote The Blue Cloak — 109 pages of hand-drawn pictograms — by translating the visual logic of a 16th-century painting into a score for sound.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "The Blue Cloak",
+      "description": "Mark Applebaum's 109-page hand-drawn score, translating Bruegel's Netherlandish Proverbs into provocations for sound. Kept density and simultaneity; dropped the figures and narrative. Translation, not illustration.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Pieter Bruegel",
+      "description": "16th-century Flemish painter. Netherlandish Proverbs (1559) depicts ~100 sayings simultaneously in a single crowded scene. Visual density as grammar; the painting that Applebaum later translated into a musical score.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Blue Note Records covers",
+      "description": "Album designs that take standard music notation — noteheads, stems, rests — and remix them into a visual language reflective of jazz's chaotic-but-aligned flow. Notation as something you can play with.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Rules as passageways",
+      "description": "A rule doesn't close things down — it creates a channel. A blank page is paralysis; a constraint is the condition for something specific to happen. The whole class lives downstream of this idea.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Visual systems vs design systems",
+      "description": "Design systems close the gap between intention and output — assembly-line factories. Visual systems are questions resolving themselves — ecosystems set in motion that can evolve in ways you didn't expect.",
+      "arc_node": "systems",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Changing the Rules (Week 1 warmup)",
+      "description": "Our first night's icebreaker. Students collectively negotiated rules in real time on a shared canvas. The system itself became a social object. We're closing the term using the same tool — a bookend.",
+      "arc_node": "systems",
+      "external_url": "https://flockmod.com/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Fractals in nature",
+      "description": "Ferns, lightning, clouds, lungs, arteries. A small move (a branch, a split, a divide) repeated at every scale until the repetition becomes the thing itself. Complexity from simple rules through iteration.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Koch curves",
+      "description": "Start with a line. Replace the middle third with a triangular bump. Do that move to every line you just made. Three sentences of instruction; the complexity is in the iteration.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Take Root Among the Stars (sketches)",
+      "description": "The Ms. Honey notebook circles. Nested circles, parent/child, arcs, randomness, rotation. Drawn for weeks before any code existed. Visualization as research; the rule became legible to me only through repetition.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Ron Eglash",
+      "description": "Mathematician and cultural theorist who studied geometric logic embedded across African villages, textiles, and divination systems. Argues fractal thinking wasn't stumbled into — it was an intentional knowledge system.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Ba-ila settlement architecture",
+      "description": "Aerial view of a southern Zambian village — a ring of rings of rings. At every scale (house, corral, village), the most-tended thing sits toward the back. The fractal is the shape of care, repeated.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Kulela",
+      "description": "The Ba-ila word for the chief's relationship to his people. Two translations: to rule, and to nourish/cherish. The same word used for a mother caring for her child. The recursive architecture encodes nested care, not hierarchy.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Kente weaving",
+      "description": "Akan tradition from Ghana. 28 strips, 5 motifs, woven without drafts on a hand loom. The rule lives in the hands; the cloth is how it comes out. Pattern names are proverbs — compressed philosophy.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Saccadic spreading (Bonwire)",
+      "description": "Kente weavers from Bonwire compress pattern density near the face and stretch it across the body — matching how the eye actually moves across a person. They called it spreading; neuroscience calls it saccadic movement.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "The Chacana",
+      "description": "Stepped Andean cross used for thousands of years across Bolivia, Peru, Ecuador. Not a picture of a cosmology — an instrument to orient yourself. Calendar, map, and cosmology in one form. The hole at the center is an axis, or absence.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Vera Molnár",
+      "description": "Hungarian-born Paris artist who made rule-based art before computers — by hand, using what she called a machine imaginaire. Got plotter access in 1968. Worked into her late 90s. Died 2023.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Interruptions (Vera Molnár)",
+      "description": "A grid of tilted line segments, with patches missing. The interruptions only register because the grid is so regular. Order is the condition for disorder to exist. The repetition is what gives the break somewhere to land.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Des Ordres (Vera Molnár)",
+      "description": "Concentric squares progressively disordering as the piece evolves. Not a before-and-after — the whole process of becoming disordered, made visible. Squares still squares, just less sure of themselves.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Le désordre",
+      "description": "Molnár's principle: keep at least 1% disorder in every piece. The 'small derangement.' I've always sought to introduce a little disorder into order.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Machine imaginaire",
+      "description": "Molnár's term for her pre-computer practice — running her own imaginary machine by hand, executing her own rules with a pencil. The plotter didn't make her an artist; it extended a practice she already had.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Ritual vs rut",
+      "description": "When does repetition feel alive and when does it flatten? A ritual has micro-variations you still notice. A rut is repetition where time has flattened out. The difference is whether the variation is still perceptible.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Truchet tiles (Week 2 studio)",
+      "description": "Our Week 2 studio. A single tile, drawn by hand, rotated four ways and tiled into a grid of 144. One mark, many times — repetition revealing variation that wasn't visible in the single tile.",
+      "arc_node": "repetition",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Self as site of inquiry",
+      "description": "Data as a lens for sitting with something, not solving it. The question isn't 'how do I get data' — it's 'what is worth noticing about my own life?' What you choose not to track is as expressive as what you do.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Personal data taxonomy",
+      "description": "Three territories of self-data. Body — biorhythms, mood, sleep. Behavior — patterns you fall into without meaning to. Relational — texts, eye contact, the people you orbit. Every category is a site where a system claims to know you.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Sonya Rapoport",
+      "description": "Bay Area artist working at the edge of art and early computing. In the late 70s, kept two records side by side for a year: what a biorhythm machine predicted, and a wall calendar collaged with daily ephemera.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Biorhythm (Sonya Rapoport)",
+      "description": "A year of refusing to let machine prediction erase lived experience. Later staged as a gallery installation: a greeter, a computer, a palm reader, and one printed line above it all — THE COMPUTER OVERRIDES ALL OPINIONS. Before Fitbit, before Oura.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Giorgia Lupi",
+      "description": "Italian designer based in NYC. Co-author of Dear Data with Stefanie Posavec. Her practice is what she calls 'humanistic data' — partial, hand-drawn, slow, refusing the smoothing of the dashboard.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Stefanie Posavec",
+      "description": "London-based designer. Co-author of Dear Data. Started the year-long correspondence with Giorgia having never met in person. The methods they chose — postcards, mailed handwriting — are themselves the meaning.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Dear Data",
+      "description": "A year-long postcard correspondence between Lupi (NYC) and Posavec (London). Each week, same theme — complaints, indecision, doors opened, physical contact — drawn by hand and mailed across the Atlantic. The method is the meaning.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Teresa Ibarra",
+      "description": "Engineer who downloaded every text message from a 2015–2016 relationship — a decade after it ended — and ran them through sentiment analysis and topic modeling. Built a portrait of affection from metadata.",
+      "arc_node": "personal",
+      "external_url": "https://teresaibarra.com/texts/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Texts (Teresa Ibarra)",
+      "description": "A relationship rendered through tools never designed to see it. Sentiment analysis on every message; topic clusters; message frequency. The graph isn't the relationship — but it's the shape of the overlap.",
+      "arc_node": "personal",
+      "external_url": "https://teresaibarra.com/texts/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "The corporate mirror",
+      "description": "Spotify Wrapped, Apple Replay, Letterboxd Recap, Reddit Recap. The once-a-year format that asks 'who were you this year?' — and only shows the parts of you the platform needs to be good about.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "YouTube Year-in-Review (proposal, 2022)",
+      "description": "A year-in-review prototype I led at YouTube. Not approved — too 'risky' to surface non-upbeat content. The design decisions are the lesson: annual vs ongoing, opted-in data vs honest, brand-safe vs uncomfortable.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Witnessed vs passively harvested",
+      "description": "Two modes of gathering. Witnessed: tally marks, journals, body scans, drawn records — you noticed and chose. Passively harvested: texts, location history, photo metadata — it exists; the act is choosing to look.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Visual Vocabularies (Week 3 studio)",
+      "description": "Pick 3–5 elements that will become your building blocks — shapes, lines, color pairs, marks. Not a legend. A world with its own logic. What can change about each mark? What has to stay the same for it to still feel like that mark?",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Spencer Finch",
+      "description": "Brooklyn-based artist whose work translates personal observation — light, color, weather — into installations. Ulysses sits at the Brooklyn Museum: a personal map made into a room.",
+      "arc_node": "personal",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Ulysses (Spencer Finch)",
+      "description": "A personal map rendered as installation. Color and light gathered from a specific journey, translated into a fixed visual record. Lives at the Brooklyn Museum.",
+      "arc_node": "personal",
+      "external_url": "https://www.brooklynmuseum.org/objects/225284",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "External data ≠ impersonal",
+      "description": "Someone decided what was worth counting. Someone chose the instrument, the interval, the units. By the time data reaches you, it has made decisions on your behalf. Your job: become a steward of someone else's partial frame.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "beck haberstroh",
+      "description": "Artist who discovered their image in a popular generative AI training dataset and wrote letters to others nearby in the dataset — not to warn them, just to convene. The response to extraction was gathering.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "We are already gathered (beck haberstroh)",
+      "description": "Started 2023, ongoing. Image donors send a description of who'd wear their mask and a prompt for what to make. At gatherings, people show up wearing strangers' faces and create on their behalf. An alternative terms-and-conditions, between strangers.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Bamana sand divination",
+      "description": "A practice from Mali. The diviner makes random marks in sand, then reduces pairs through a binary rule, recursively, until a final pattern emerges. An algorithm — with the randomness as a feature, not a flaw.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Marshall Islands stick charts",
+      "description": "Indigenous navigational tool from the central Pacific. Coconut-frond midribs tied together; shells mark island locations; the layout encodes ocean swell patterns and directional flow. Knowledge you hold in your hands.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Take Root Among the Stars",
+      "description": "Generative work pairing US Naval Observatory eclipse photographs (1869–1937) with Earth Orientation Parameters. Each frame's diagram reflects where the planet actually was on that day. The data is the spine; randomness speaks alongside.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Where We Land",
+      "description": "Steel kinetic sculpture, three rotating parts, two-foot scale. A choreography engine balances absolute moves (memory) with relative offsets (drift), and a cooldown manager builds rest into the system. Designing behavior is designing meaning.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Tim Rodenbroeker",
+      "description": "Made the I/O chart we discussed Week 4. A map of the territory of creative coding — sensors, audio, weather, accelerometer, love letters as inputs; motors, sculpture, light, textile, projection as outputs.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "I/O Chart (Rodenbroeker)",
+      "description": "A map of creative coding's territory. A canvas in a browser is one line on this chart. Your final project does not have to stay between two narrow columns. Pick an input you've never worked with, an output you've never made.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Nathalie Miebach",
+      "description": "Weaves sculptures and musical scores from NOAA weather buoy data. Same source as our fetch demos; what she builds around it is not. Describes her work as making data 'physically and emotionally perceptible.'",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Earth Orientation Parameters",
+      "description": "An international dataset tracking where the planet actually is on a given day — orbital position, polar tilts, the corrections between predicted and measured Earth. Our biggest cycle is the one around the sun; within it, we are never moving in a straight line.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Convening over extracting",
+      "description": "beck's move. When you find yourself inside someone else's dataset, you don't have to scrape it back, visualize it, or expose it. You can use it as a directory — to find people who are also there.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Data as embodied knowledge",
+      "description": "The stick chart and the divination both refuse the separation between a thing you hold in your hands and a thing you know. A dataset can be something you walk around, hear, or stand inside of.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Light Sculptures (Dexter Calendar)",
+      "description": "Ecological data made visible through light. From MIT Media Lab.",
+      "arc_node": "world",
+      "external_url": "https://www.media.mit.edu/projects/light-sculpture/overview/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Tree Clocks",
+      "description": "Trees as living clocks — biological rhythms as data source. From MIT Media Lab. The tree itself is the instrument.",
+      "arc_node": "world",
+      "external_url": "https://www.media.mit.edu/projects/tree-clocks/overview/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Dan Gorelick",
+      "description": "Artist whose work meditates on geological time and ecological scale. A reference for thinking about data at scales the body can't quite hold.",
+      "arc_node": "world",
+      "external_url": "https://www.dan.dog",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Geo Time (Dan Gorelick)",
+      "description": "Meditations on geological time. Data as a way of rendering scales of time the body can't hold directly.",
+      "arc_node": "world",
+      "external_url": "https://www.dan.dog/projects/meditations-on-geological-time",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Shell Melody (pepepebrick)",
+      "description": "Algorithms simulating shell growth, translated into ten-second melodies. Each shell is a hard, silent chronicle of time — centuries of marine climate compressed into a sound signal. A time-lapse of nature's memory.",
+      "arc_node": "world",
+      "external_url": "https://www.instagram.com/p/DQ1ntt1kvuJ",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Waterline (Jonathan Chomko)",
+      "description": "Tides, water, threshold. Environmental data as material for an unfolding visual practice.",
+      "arc_node": "world",
+      "external_url": "https://jonathanchomko.com/Waterline",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "S-tog (1991)",
+      "description": "A musical score based literally on the Copenhagen subway map and timetables. Station names replaced with abstract verbal substitutions. Players synchronized by stopwatches improvise the city's daily rhythm.",
+      "arc_node": "world",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "What does your system believe about the data it receives?",
+      "description": "The question that anchors the final projects. Not what does it do — what does it believe. Where does interpretation enter? What does it refuse to flatten?",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Beyond the screen",
+      "description": "Your system can end at a motor, a speaker, a thread, a wall. The chart in front of you is wide open. The question isn't what does it look like on a screen — it's what form does this system want to take?",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "Friction as creative material",
+      "description": "AI without friction collapses into slop. Friction can be deliberately re-introduced as a creative choice — through ambiguous prompts, iteration, in-painting. Where the thinking lives is where the work is.",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "What counts as finished?",
+      "description": "Finished does not mean polished. Finished means you can talk about what you made and what decisions are inside it. A sketchbook of failed attempts with one thing you're proud of is a finished project.",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "topic",
+      "title": "The un-built version counts",
+      "description": "The piece you didn't make. The thread you abandoned. The fragment, the sketch, the screenshot of code that broke. All of it is allowed to be here.",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "drawing.garden",
+      "description": "A playful interactive piece. Not data-focused — inspiration for what playful interactions can do, and a quiet model for the kind of small, hand-built web we keep gesturing toward.",
+      "arc_node": "reflections",
+      "external_url": "https://drawing.garden/",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "project",
+      "title": "Imagine Intel zine (Mozilla)",
+      "description": "On AI tools, decisions, and what it means to make something intentional in a moment when AI can execute anything. The through-line is taste, authorship, and the difference between efficiency and meaning.",
+      "arc_node": "reflections",
+      "external_url": "https://assets.mofoprod.net/network/documents/MozillaFoundation_ImagineIntel_Zine_Digital_2026.pdf",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Mattaniah Aytenfsu",
+      "description": "Brooklyn-based new media artist and engineer. Lead instructor for Form/Flow/Feel. Practice lives in the gap where coding teaches you to break ideas down and art teaches you to build meaning back in.",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    },
+    {
+      "type": "person",
+      "title": "Lara McConnaughy",
+      "description": "Co-instructor for Form/Flow/Feel. Linguistics background, works at DeepMind. Led the live coding through the term — loops, functions, arrays, fetch. Translator between the design questions and the code that carries them.",
+      "arc_node": "reflections",
+      "created_by": "Mattaniah"
+    }
+  ],
+  "connections": [
+    {
+      "from_title": "Sol LeWitt",
+      "to_title": "Wall Drawings"
+    },
+    {
+      "from_title": "Genevieve von Petzinger",
+      "to_title": "32 Geometric Signs"
+    },
+    {
+      "from_title": "Pedro Stolf",
+      "to_title": "Synthopsis"
+    },
+    {
+      "from_title": "Mark Applebaum",
+      "to_title": "The Blue Cloak"
+    },
+    {
+      "from_title": "Pieter Bruegel",
+      "to_title": "The Blue Cloak"
+    },
+    {
+      "from_title": "Vera Molnár",
+      "to_title": "Interruptions (Vera Molnár)"
+    },
+    {
+      "from_title": "Vera Molnár",
+      "to_title": "Des Ordres (Vera Molnár)"
+    },
+    {
+      "from_title": "Vera Molnár",
+      "to_title": "Le désordre"
+    },
+    {
+      "from_title": "Vera Molnár",
+      "to_title": "Machine imaginaire"
+    },
+    {
+      "from_title": "Ron Eglash",
+      "to_title": "Ba-ila settlement architecture"
+    },
+    {
+      "from_title": "Ron Eglash",
+      "to_title": "Kente weaving"
+    },
+    {
+      "from_title": "Sonya Rapoport",
+      "to_title": "Biorhythm (Sonya Rapoport)"
+    },
+    {
+      "from_title": "Giorgia Lupi",
+      "to_title": "Dear Data"
+    },
+    {
+      "from_title": "Stefanie Posavec",
+      "to_title": "Dear Data"
+    },
+    {
+      "from_title": "Teresa Ibarra",
+      "to_title": "Texts (Teresa Ibarra)"
+    },
+    {
+      "from_title": "Spencer Finch",
+      "to_title": "Ulysses (Spencer Finch)"
+    },
+    {
+      "from_title": "beck haberstroh",
+      "to_title": "We are already gathered (beck haberstroh)"
+    },
+    {
+      "from_title": "Tim Rodenbroeker",
+      "to_title": "I/O Chart (Rodenbroeker)"
+    },
+    {
+      "from_title": "Dan Gorelick",
+      "to_title": "Geo Time (Dan Gorelick)"
+    },
+    {
+      "from_title": "Mattaniah Aytenfsu",
+      "to_title": "Take Root Among the Stars"
+    },
+    {
+      "from_title": "Mattaniah Aytenfsu",
+      "to_title": "Take Root Among the Stars (sketches)"
+    },
+    {
+      "from_title": "Mattaniah Aytenfsu",
+      "to_title": "Where We Land"
+    },
+    {
+      "from_title": "Mattaniah Aytenfsu",
+      "to_title": "YouTube Year-in-Review (proposal, 2022)"
+    },
+    {
+      "from_title": "Kente weaving",
+      "to_title": "Saccadic spreading (Bonwire)"
+    },
+    {
+      "from_title": "Ba-ila settlement architecture",
+      "to_title": "Kulela"
+    },
+    {
+      "from_title": "Interruptions (Vera Molnár)",
+      "to_title": "Le désordre"
+    },
+    {
+      "from_title": "Des Ordres (Vera Molnár)",
+      "to_title": "Le désordre"
+    },
+    {
+      "from_title": "Fractals in nature",
+      "to_title": "Koch curves"
+    },
+    {
+      "from_title": "32 Geometric Signs",
+      "to_title": "Rules as passageways"
+    },
+    {
+      "from_title": "Wall Drawings",
+      "to_title": "Rules as passageways"
+    },
+    {
+      "from_title": "Wall Drawings",
+      "to_title": "Conditional Design"
+    },
+    {
+      "from_title": "The Blue Cloak",
+      "to_title": "Pieter Bruegel"
+    },
+    {
+      "from_title": "Blue Note Records covers",
+      "to_title": "The Blue Cloak"
+    },
+    {
+      "from_title": "Bamana sand divination",
+      "to_title": "Marshall Islands stick charts"
+    },
+    {
+      "from_title": "Marshall Islands stick charts",
+      "to_title": "Data as embodied knowledge"
+    },
+    {
+      "from_title": "Bamana sand divination",
+      "to_title": "Data as embodied knowledge"
+    },
+    {
+      "from_title": "Nathalie Miebach",
+      "to_title": "Data as embodied knowledge"
+    },
+    {
+      "from_title": "Where We Land",
+      "to_title": "Data as embodied knowledge"
+    },
+    {
+      "from_title": "Earth Orientation Parameters",
+      "to_title": "Take Root Among the Stars"
+    },
+    {
+      "from_title": "Texts (Teresa Ibarra)",
+      "to_title": "The corporate mirror"
+    },
+    {
+      "from_title": "YouTube Year-in-Review (proposal, 2022)",
+      "to_title": "The corporate mirror"
+    },
+    {
+      "from_title": "Biorhythm (Sonya Rapoport)",
+      "to_title": "Personal data taxonomy"
+    },
+    {
+      "from_title": "Dear Data",
+      "to_title": "Witnessed vs passively harvested"
+    },
+    {
+      "from_title": "Take Root Among the Stars (sketches)",
+      "to_title": "Take Root Among the Stars"
+    },
+    {
+      "from_title": "Sol LeWitt",
+      "to_title": "Vera Molnár"
+    },
+    {
+      "from_title": "Conditional Design",
+      "to_title": "Vera Molnár"
+    },
+    {
+      "from_title": "Conditional Design",
+      "to_title": "Changing the Rules (Week 1 warmup)"
+    },
+    {
+      "from_title": "32 Geometric Signs",
+      "to_title": "Fractals in nature"
+    },
+    {
+      "from_title": "Ron Eglash",
+      "to_title": "Bamana sand divination"
+    },
+    {
+      "from_title": "The Chacana",
+      "to_title": "Marshall Islands stick charts"
+    },
+    {
+      "from_title": "Synthopsis",
+      "to_title": "Visual Vocabularies (Week 3 studio)"
+    },
+    {
+      "from_title": "Kente weaving",
+      "to_title": "Visual Vocabularies (Week 3 studio)"
+    },
+    {
+      "from_title": "Biorhythm (Sonya Rapoport)",
+      "to_title": "We are already gathered (beck haberstroh)"
+    },
+    {
+      "from_title": "Dear Data",
+      "to_title": "Where We Land"
+    },
+    {
+      "from_title": "Texts (Teresa Ibarra)",
+      "to_title": "External data ≠ impersonal"
+    },
+    {
+      "from_title": "Where We Land",
+      "to_title": "Beyond the screen"
+    },
+    {
+      "from_title": "Nathalie Miebach",
+      "to_title": "Beyond the screen"
+    },
+    {
+      "from_title": "I/O Chart (Rodenbroeker)",
+      "to_title": "Beyond the screen"
+    },
+    {
+      "from_title": "Truchet tiles (Week 2 studio)",
+      "to_title": "Visual Vocabularies (Week 3 studio)"
+    },
+    {
+      "from_title": "Changing the Rules (Week 1 warmup)",
+      "to_title": "Truchet tiles (Week 2 studio)"
+    }
+  ]
+}
