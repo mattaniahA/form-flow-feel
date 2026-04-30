@@ -70,12 +70,13 @@ export default function App() {
     () => localStorage.getItem('garden_name')
   )
   const [pending, setPending] = useState<PendingClick | null>(null)
-  const [selectedNode, setSelectedNode] = useState<GardenNode | null>(null)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [connectMode, setConnectMode] = useState(false)
   const [connectSourceId, setConnectSourceId] = useState<string | null>(null)
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
 
   const posMap = useMemo(() => computeSpreadPositions(nodes), [nodes])
+  const selectedNode = selectedNodeId ? (nodes.find(n => n.id === selectedNodeId) ?? null) : null
 
   function handleCanvasClick() {
     if (connectMode) {
@@ -106,7 +107,7 @@ export default function App() {
       setConnectSourceId(null)
       return
     }
-    setSelectedNode(node)
+    setSelectedNodeId(node.id)
   }
 
   function handleStartConnect() {
@@ -116,7 +117,7 @@ export default function App() {
   }
 
   function closePanel() {
-    setSelectedNode(null)
+    setSelectedNodeId(null)
     setConnectMode(false)
     setConnectSourceId(null)
   }

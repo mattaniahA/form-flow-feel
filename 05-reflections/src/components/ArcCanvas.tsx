@@ -11,7 +11,7 @@ export const ARC_NODES = [
 ] as const
 
 export type ArcNodeId = typeof ARC_NODES[number]['id']
-export const ZONE_RADIUS = 210
+export const ZONE_RADIUS = 200
 
 const ARC_PATH = 'M 800,110 L 1133,352 L 1006,743 L 594,743 L 467,352'
 

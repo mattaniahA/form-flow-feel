@@ -19,6 +19,9 @@ export function useGardenData() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'nodes' },
         (payload) => setNodes(prev => [...prev, payload.new as GardenNode])
       )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'nodes' },
+        (payload) => setNodes(prev => prev.map(n => n.id === payload.new.id ? payload.new as GardenNode : n))
+      )
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'nodes' },
         (payload) => setNodes(prev => prev.filter(n => n.id !== payload.old.id))
       )
