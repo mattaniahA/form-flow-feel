@@ -3,17 +3,17 @@ import { useRef, useState, useCallback, useEffect, type MouseEvent, type ReactNo
 const PENTAGON_CENTER = { x: 800, y: 460 }
 
 export const ARC_NODES = [
-  { id: 'systems',     label: 'Systems + Sensibilities',      x: 800,  y: 150 },
-  { id: 'repetition',  label: 'Forms of Repetition',          x: 1095, y: 364 },
-  { id: 'personal',    label: 'Mapping the Personal',         x: 982,  y: 711 },
-  { id: 'world',       label: 'World as Input',               x: 618,  y: 711 },
-  { id: 'reflections', label: 'Reflections + Future Thinking', x: 505,  y: 364 },
+  { id: 'systems',     label: 'Systems + Sensibilities',      x: 800,  y: 110 },
+  { id: 'repetition',  label: 'Forms of Repetition',          x: 1133, y: 352 },
+  { id: 'personal',    label: 'Mapping the Personal',         x: 1006, y: 743 },
+  { id: 'world',       label: 'World as Input',               x: 594,  y: 743 },
+  { id: 'reflections', label: 'Reflections + Future Thinking', x: 467,  y: 352 },
 ] as const
 
 export type ArcNodeId = typeof ARC_NODES[number]['id']
-export const ZONE_RADIUS = 175
+export const ZONE_RADIUS = 210
 
-const ARC_PATH = 'M 800,150 L 1095,364 L 982,711 L 618,711 L 505,364'
+const ARC_PATH = 'M 800,110 L 1133,352 L 1006,743 L 594,743 L 467,352'
 
 const SCALE_MIN = 0.3
 const SCALE_MAX = 4
