@@ -32,21 +32,27 @@ function buildInitialEntries(nodes: GardenNode[], connections: Connection[]): Lo
   return all.slice(0, 6)
 }
 
-function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
+function useActivityLog(nodes: GardenNode[], connections: Connection[], loaded: boolean) {
   const [entries, setEntries] = useState<LogEntry[]>([])
-  const seenNodes = useRef<Set<string> | null>(null)
-  const seenConns = useRef<Set<string> | null>(null)
+  const initialized = useRef(false)
+  const seenNodes = useRef(new Set<string>())
+  const seenConns = useRef(new Set<string>())
   const nodesRef = useRef(nodes)
 
   useEffect(() => { nodesRef.current = nodes }, [nodes])
 
+  // One-time init: runs after both fetches complete, seeds from full DB history
   useEffect(() => {
-    if (seenNodes.current === null) {
-      seenNodes.current = new Set(nodes.map(n => n.id))
-      // connections already seeded — both are ready, populate from DB history
-      if (seenConns.current !== null) setEntries(buildInitialEntries(nodes, connections))
-      return
-    }
+    if (!loaded || initialized.current) return
+    initialized.current = true
+    seenNodes.current = new Set(nodes.map(n => n.id))
+    seenConns.current = new Set(connections.map(c => c.id))
+    setEntries(buildInitialEntries(nodes, connections))
+  }, [loaded, nodes, connections])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Realtime: new nodes
+  useEffect(() => {
+    if (!initialized.current) return
     const fresh: LogEntry[] = []
     for (const n of nodes) {
       if (!seenNodes.current.has(n.id)) {
@@ -55,15 +61,11 @@ function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
       }
     }
     if (fresh.length) setEntries(prev => [...fresh, ...prev].slice(0, 6))
-  }, [nodes])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [nodes])
 
+  // Realtime: new connections
   useEffect(() => {
-    if (seenConns.current === null) {
-      seenConns.current = new Set(connections.map(c => c.id))
-      // nodes already seeded — both are ready, populate from DB history
-      if (seenNodes.current !== null) setEntries(buildInitialEntries(nodes, connections))
-      return
-    }
+    if (!initialized.current) return
     const fresh: LogEntry[] = []
     for (const c of connections) {
       if (!seenConns.current.has(c.id)) {
@@ -75,7 +77,7 @@ function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
       }
     }
     if (fresh.length) setEntries(prev => [...fresh, ...prev].slice(0, 6))
-  }, [connections])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [connections])
 
   return entries
 }
@@ -83,10 +85,11 @@ function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
 interface Props {
   nodes: GardenNode[]
   connections: Connection[]
+  loaded: boolean
 }
 
-export default function ActivityLog({ nodes, connections }: Props) {
-  const entries = useActivityLog(nodes, connections)
+export default function ActivityLog({ nodes, connections, loaded }: Props) {
+  const entries = useActivityLog(nodes, connections, loaded)
   const [, tick] = useState(0)
 
   useEffect(() => {

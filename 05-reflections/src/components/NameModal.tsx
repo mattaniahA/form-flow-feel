@@ -17,10 +17,16 @@ export default function NameModal({ onSubmit }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-      <div className="bg-[#F5F1E8] border border-[#C9C3B5] rounded-lg p-8 w-80 shadow-lg">
-        <h2 className="text-lg font-light text-[#2A2520] mb-1">Welcome to the Garden</h2>
+      <div className="bg-[#F5F1E8] border border-[#C9C3B5] rounded-lg p-8 w-96 shadow-lg">
+        <h2 className="text-lg font-light text-[#2A2520] mb-3">welcome to the class garden ❤︎ </h2>
+
+        <p className="text-sm text-[#6B6560] font-light leading-relaxed mb-4">
+          A shared map of ideas across class. Double-click to plant, click to connect.
+        </p>
+
         <p className="text-sm text-[#6B6560] font-light mb-1">What's your name?</p>
-        <p className="text-xs text-[#A9A39D] font-light mb-6">Use your full name to edit your student node.</p>
+        <p className="text-xs text-[#A9A39D] font-light mb-4">Use your full name to edit your student node.</p>
+
         <form onSubmit={handleSubmit}>
           <input
             autoFocus
@@ -35,7 +41,7 @@ export default function NameModal({ onSubmit }: Props) {
             disabled={!name.trim()}
             className="w-full py-2 text-sm font-light text-[#2A2520] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            Enter
+            Enter the Garden
           </button>
         </form>
       </div>

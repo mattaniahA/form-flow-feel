@@ -4,14 +4,22 @@ import { supabase, type GardenNode, type Connection } from '../lib/supabase'
 export function useGardenData() {
   const [nodes, setNodes] = useState<GardenNode[]>([])
   const [connections, setConnections] = useState<Connection[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
+    let nodesReady = false
+    let connsReady = false
+
     // Initial fetch
     supabase.from('nodes').select('*').order('created_at').then(({ data }) => {
       if (data) setNodes(data)
+      nodesReady = true
+      if (connsReady) setLoaded(true)
     })
     supabase.from('connections').select('*').order('created_at').then(({ data }) => {
       if (data) setConnections(data)
+      connsReady = true
+      if (nodesReady) setLoaded(true)
     })
 
     const nodeChannel = supabase
@@ -43,5 +51,5 @@ export function useGardenData() {
     }
   }, [])
 
-  return { nodes, connections }
+  return { nodes, connections, loaded }
 }

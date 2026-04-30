@@ -83,7 +83,7 @@ function toZoneRelative(canvasX: number, canvasY: number, arcNodeId: ArcNode) {
 }
 
 export default function App() {
-  const { nodes, connections } = useGardenData()
+  const { nodes, connections, loaded } = useGardenData()
   const [userName, setUserName] = useState<string | null>(
     () => localStorage.getItem('garden_name')
   )
@@ -158,7 +158,27 @@ export default function App() {
     <>
       {!userName && <NameModal onSubmit={setUserName} />}
 
-      <ActivityLog nodes={nodes} connections={connections} />
+      <p className="fixed top-5 left-5 z-10 text-sm font-light text-[#6B6560] pointer-events-none select-none" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        Form / Flow / Feel
+      </p>
+
+      {userName && (
+        <div className="fixed top-5 right-5 z-10 w-44 pointer-events-none select-none text-right">
+          <ul className="space-y-1.5">
+            {[
+              ['double-click', 'plant an idea'],
+              ['click', 'explore or connect'],
+              ['scroll / drag', 'navigate'],
+            ].map(([action, desc]) => (
+              <li key={action} className="text-[11px] font-light text-[#8B8378] leading-snug">
+                <span className="text-[#6B6560]">{action}</span> — {desc}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <ActivityLog nodes={nodes} connections={connections} loaded={loaded} />
 
       {connectMode && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-[#2A2520] text-[#F5F1E8] text-sm font-light px-5 py-2 rounded-full shadow-lg pointer-events-none">
@@ -169,7 +189,7 @@ export default function App() {
       {/* Settings — bottom-right */}
       <button
         onClick={() => setShowSettings(s => !s)}
-        className="fixed bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+        className="fixed bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] bg-[#F5F1E8] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         {isAdmin ? '⚙ admin' : '⚙ settings'}
