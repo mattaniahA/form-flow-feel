@@ -89,21 +89,6 @@ function PersonCircle({ color, initial }: { color: string; initial: string }) {
   )
 }
 
-function StudentRing({ color }: { color: string }) {
-  const count = 10
-  const r = 26
-  return (
-    <>
-      <circle r={r} fill="none" stroke={color} strokeWidth={0.9} opacity={0.3} strokeDasharray="2 3" />
-      {Array.from({ length: count }, (_, i) => {
-        const a = (i / count) * 2 * Math.PI - Math.PI / 2
-        return (
-          <circle key={i} cx={r * Math.cos(a)} cy={r * Math.sin(a)} r={2.4} fill={color} opacity={0.55} />
-        )
-      })}
-    </>
-  )
-}
 
 function Leaf({ color, angle }: { color: string; angle: number }) {
   return (
