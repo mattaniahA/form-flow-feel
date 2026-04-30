@@ -61,7 +61,6 @@ function Flower({ color }: { color: string }) {
           cx={0} cy={-10}
           rx={5} ry={8}
           fill={color}
-          opacity={0.88}
           transform={`rotate(${(i / petals) * 360})`}
         />
       ))}
@@ -73,7 +72,7 @@ function Flower({ color }: { color: string }) {
 function PersonCircle({ color, initial }: { color: string; initial: string }) {
   return (
     <>
-      <circle r={13} fill={color} opacity={0.9} />
+      <circle r={13} fill={color} />
       <text
         textAnchor="middle"
         dominantBaseline="central"
@@ -96,7 +95,6 @@ function Leaf({ color, angle }: { color: string; angle: number }) {
       <path
         d="M 0,-13 C 10,-5 10,5 0,13 C -10,5 -10,-5 0,-13"
         fill={color}
-        opacity={0.88}
       />
     </g>
   )
@@ -109,14 +107,12 @@ interface Props {
   connectMode?: boolean
   pos: { x: number; y: number }
   onHoverChange?: (id: string | null) => void
-  richness?: number  // 0–1, how much to darken based on metadata density
 }
 
-export default function NodeObject({ node, onClick, isConnectSource, connectMode, pos, onHoverChange, richness = 0 }: Props) {
+export default function NodeObject({ node, onClick, isConnectSource, connectMode, pos, onHoverChange }: Props) {
   const [hovered, setHovered] = useState(false)
   const { x, y } = pos
   const color = pickColor(node.id, node.type)
-  const opacity = 0.5 + richness * 0.5
   const hash = idHash(node.id)
   const leafAngle = (hash * 97) % 180
 
@@ -126,7 +122,6 @@ export default function NodeObject({ node, onClick, isConnectSource, connectMode
   return (
     <g
       transform={`translate(${x} ${y}) scale(${hovered ? 1.25 : 1})`}
-      opacity={opacity}
       style={{ cursor, transition: 'transform 0.15s ease' }}
       onMouseDown={e => e.stopPropagation()}
       onDoubleClick={e => e.stopPropagation()}

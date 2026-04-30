@@ -246,7 +246,7 @@ export default function DetailPanel({
 
             {node.external_url && (
               <a
-                href={node.external_url}
+                href={/^https?:\/\//i.test(node.external_url) ? node.external_url : `https://${node.external_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-xs text-[#8B8378] underline underline-offset-2 hover:text-[#2A2520] break-all"

@@ -14,7 +14,7 @@ export type ArcNodeId = typeof ARC_NODES[number]['id']
 export const ZONE_RADIUS = 200
 export const STUDENT_RING_R = 720
 
-const ARC_PATH = 'M 800,110 L 1133,352 L 1006,743 L 594,743 L 467,352'
+const ARC_PATH = 'M 800,110 Q 1005,178 1133,352 Q 1131,568 1006,743 Q 800,808 594,743 Q 469,568 467,352 Q 595,178 800,110'
 
 const SCALE_MIN = 0.3
 const SCALE_MAX = 4
@@ -66,14 +66,23 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
 
   const clampScale = (s: number) => Math.min(SCALE_MAX, Math.max(SCALE_MIN, s))
 
+  function clientToViewBox(clientX: number, clientY: number) {
+    const svg = svgRef.current!
+    const pt = svg.createSVGPoint()
+    pt.x = clientX
+    pt.y = clientY
+    return pt.matrixTransform(svg.getScreenCTM()!.inverse())
+  }
+
   useEffect(() => {
     const el = svgRef.current
     if (!el) return
     const handler = (e: globalThis.WheelEvent) => {
       e.preventDefault()
-      const rect = el.getBoundingClientRect()
-      const mx = (e.clientX - rect.left) / rect.width  * CANVAS_W
-      const my = (e.clientY - rect.top)  / rect.height * CANVAS_H
+      const pt = el.createSVGPoint()
+      pt.x = e.clientX
+      pt.y = e.clientY
+      const { x: mx, y: my } = pt.matrixTransform(el.getScreenCTM()!.inverse())
       const factor = e.deltaY < 0 ? 1.1 : 0.9
       setTransform(prev => {
         const next = clampScale(prev.scale * factor)
@@ -94,22 +103,18 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
   const onMouseMove = useCallback((e: MouseEvent<SVGSVGElement>) => {
     if (!drag.current) return
     const { startX, startY, ox, oy } = drag.current
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scaleRatio = CANVAS_W / rect.width
-    const dx = (e.clientX - startX) * scaleRatio
-    const dy = (e.clientY - startY) * scaleRatio
+    const ctm = svgRef.current!.getScreenCTM()!
+    const dx = (e.clientX - startX) / ctm.a
+    const dy = (e.clientY - startY) / ctm.d
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved.current = true
     setTransform(prev => ({ ...prev, x: ox + dx, y: oy + dy }))
   }, [])
 
   const toCanvasCoords = useCallback((clientX: number, clientY: number) => {
-    const rect = svgRef.current!.getBoundingClientRect()
-    const scaleRatio = CANVAS_W / rect.width
-    const cx = (clientX - rect.left) * scaleRatio
-    const cy = (clientY - rect.top)  * scaleRatio
+    const { x: vx, y: vy } = clientToViewBox(clientX, clientY)
     return {
-      x: (cx - transform.x) / transform.scale,
-      y: (cy - transform.y) / transform.scale,
+      x: (vx - transform.x) / transform.scale,
+      y: (vy - transform.y) / transform.scale,
     }
   }, [transform])
 
@@ -136,14 +141,6 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#F5F1E8]">
-      <button
-        onClick={resetView}
-        className="absolute bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
-        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-      >
-        reset view
-      </button>
-
       <svg
         ref={svgRef}
         viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
@@ -184,10 +181,10 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
               cy={node.y}
               r={ZONE_RADIUS}
               fill="none"
-              stroke="#C9C3B5"
+              stroke="#8B8378"
               strokeWidth={1}
               strokeDasharray="4 6"
-              opacity={0.5}
+              opacity={0.45}
             />
           ))}
 
@@ -198,7 +195,7 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
             stroke="#8B8378"
             strokeWidth={1.2}
             strokeLinejoin="round"
-            opacity={0.55}
+            opacity={0.25}
           />
 
           {/* Node dots + curved labels */}

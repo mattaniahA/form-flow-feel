@@ -6,6 +6,7 @@ import NameModal from './components/NameModal'
 import AddNodeModal from './components/AddNodeModal'
 import DetailPanel from './components/DetailPanel'
 import SettingsPanel from './components/SettingsPanel'
+import ActivityLog from './components/ActivityLog'
 import { useGardenData } from './hooks/useGardenData'
 import { supabase, type ArcNode, type GardenNode } from './lib/supabase'
 
@@ -157,16 +158,18 @@ export default function App() {
     <>
       {!userName && <NameModal onSubmit={setUserName} />}
 
+      <ActivityLog nodes={nodes} connections={connections} />
+
       {connectMode && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-[#2A2520] text-[#F5F1E8] text-sm font-light px-5 py-2 rounded-full shadow-lg pointer-events-none">
           Click another object to connect — Escape to cancel
         </div>
       )}
 
-      {/* Settings gear — bottom-left */}
+      {/* Settings — bottom-right */}
       <button
         onClick={() => setShowSettings(s => !s)}
-        className="fixed bottom-5 left-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+        className="fixed bottom-5 right-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         {isAdmin ? '⚙ admin' : '⚙ settings'}
@@ -197,7 +200,6 @@ export default function App() {
             connectMode={connectMode}
             pos={posMap.get(node.id) ?? { x: 800, y: 460 }}
             onHoverChange={setHoveredNodeId}
-            richness={richnessMap.get(node.id) ?? 0}
           />
         ))}
       </ArcCanvas>
