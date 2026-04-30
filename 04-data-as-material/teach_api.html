@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 4 — APIs & Data Sonification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f1a; color: #e0e0f0;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden; height: 100vh; width: 100vw;
+    }
+
+    /* ── Slide container ─────────────────── */
+    .deck { position: relative; width: 100vw; height: 100vh; }
+    .slide {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 60px 80px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+
+    /* ── Typography ──────────────────────── */
+    h1 {
+      font-size: 3rem; font-weight: 800; text-align: center;
+      margin-bottom: 16px; line-height: 1.2;
+    }
+    h1.gradient {
+      background: linear-gradient(90deg, #a78bfa, #60a5fa, #4ade80);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    h2 {
+      font-size: 2.2rem; font-weight: 700; margin-bottom: 24px;
+      color: #f0f0ff; text-align: center;
+    }
+    h3 { font-size: 1.1rem; font-weight: 600; color: #a78bfa; margin-bottom: 12px; }
+    p, li {
+      font-size: 1.15rem; color: #bbc; line-height: 1.8;
+      max-width: 800px; text-align: center;
+    }
+    p strong, li strong { color: #e0e0f0; }
+    .subtitle {
+      font-size: 1.2rem; color: #888; text-align: center; margin-bottom: 8px;
+    }
+    .big-emoji { font-size: 4rem; margin-bottom: 20px; }
+    .small { font-size: 0.9rem; color: #666; margin-top: 16px; }
+
+    /* ── Code ─────────────────────────────── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #1e1e38; color: #c084fc;
+      padding: 2px 8px; border-radius: 4px; font-size: 0.9em;
+    }
+    .code-block {
+      background: #1a1a30; border: 1px solid #2a2a4a; border-radius: 12px;
+      padding: 24px 28px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; color: #ccc; line-height: 2;
+      text-align: left; white-space: pre; max-width: 820px; width: 100%;
+      overflow-x: auto; margin: 16px 0;
+    }
+    .code-block .kw { color: #c084fc; }
+    .code-block .str { color: #fbbf24; }
+    .code-block .num { color: #4ade80; }
+    .code-block .cmt { color: #555; }
+    .code-block .key { color: #ff758c; }
+    .code-block .fn { color: #60a5fa; }
+
+    /* ── Lists ────────────────────────────── */
+    ul { list-style: none; text-align: left; max-width: 700px; }
+    ul li { padding: 8px 0; font-size: 1.1rem; }
+    ul li::before { content: '→ '; color: #a78bfa; font-weight: 700; }
+
+    /* ── Tables ───────────────────────────── */
+    table {
+      border-collapse: collapse; font-size: 0.95rem; margin: 16px 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    th {
+      background: #1e1e38; color: #a78bfa; font-weight: 600;
+      padding: 12px 20px; text-align: left; border-bottom: 2px solid #2a2a4a;
+    }
+    td {
+      padding: 10px 20px; border-bottom: 1px solid #1e1e38; color: #ccc;
+    }
+
+    /* ── Cards / Callouts ────────────────── */
+    .callout {
+      background: #1a1a30; border-left: 3px solid #a78bfa;
+      border-radius: 0 10px 10px 0; padding: 18px 24px;
+      font-size: 1rem; color: #ccc; max-width: 700px;
+      text-align: left; margin: 16px 0; line-height: 1.8;
+    }
+    .callout.green { border-left-color: #4ade80; }
+    .callout.blue { border-left-color: #60a5fa; }
+    .callout.pink { border-left-color: #f0abfc; }
+    .callout strong { color: #e0e0f0; }
+
+    .two-col {
+      display: flex; gap: 30px; max-width: 900px; width: 100%;
+      align-items: flex-start;
+    }
+    .two-col > div { flex: 1; }
+
+    .analogy-row {
+      display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+      margin: 20px 0;
+    }
+    .analogy-card {
+      background: #16162a; border: 1px solid #2a2a4a; border-radius: 12px;
+      padding: 20px; text-align: center; width: 160px;
+    }
+    .analogy-card .icon { font-size: 2rem; margin-bottom: 8px; }
+    .analogy-card .label { font-size: 0.8rem; color: #888; margin-bottom: 4px; }
+    .analogy-card .value { font-size: 0.9rem; color: #e0e0f0; font-weight: 600; }
+
+    /* ── URL breakdown ───────────────────── */
+    .url-line {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      padding: 6px 0; display: flex; gap: 20px;
+    }
+    .url-line .part { color: #60a5fa; }
+    .url-line .explain { color: #666; font-family: 'Inter', sans-serif; font-size: 0.8rem; }
+
+    /* ── Nav ──────────────────────────────── */
+    .nav {
+      position: fixed; bottom: 20px; right: 30px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .nav button {
+      background: #2a2a4a; color: #ccc; border: 1px solid #3a3a5a;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .nav button:hover { background: #3a3a5a; }
+    .counter {
+      position: fixed; bottom: 24px; left: 30px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      color: #444; z-index: 100;
+    }
+    .progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      z-index: 100; transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter"></div>
+<div class="nav">
+  <button onclick="prev()">← Back</button>
+  <button onclick="next()">Next →</button>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SLIDE 1: Title -->
+<div class="slide">
+  <p class="big-emoji">🌧️ 🎵</p>
+  <h1 class="gradient">APIs & Data Sonification</h1>
+  <p class="subtitle">Week 4 — Form / Flow / Feel</p>
+  <p class="small">Use ← → arrow keys or buttons to navigate</p>
+</div>
+
+<!-- SLIDE 2: Recap -->
+<div class="slide">
+  <h2>📋 Last Week</h2>
+  <p>You <strong>wrote your own data</strong> by hand and turned it into art.</p>
+  <div class="code-block"><span class="kw">let</span> sleepData = {
+  <span class="key">"day"</span>: <span class="str">"Mon"</span>,
+  <span class="key">"hours"</span>: <span class="num">8</span>,
+  <span class="key">"restful"</span>: <span class="num">3</span>,
+  <span class="key">"dreamed"</span>: <span class="kw">true</span>
+};</div>
+  <p>Objects, arrays, <code>map()</code>, dot notation — you know all of this.</p>
+</div>
+
+<!-- SLIDE 3: This week -->
+<div class="slide">
+  <h2>🌍 This Week</h2>
+  <p style="font-size: 1.4rem; margin-bottom: 30px;">What if someone <strong>already collected</strong> the data for you?</p>
+  <p>Millions of data points. Updated every hour. Available for free.</p>
+  <p style="margin-top: 20px;">You just need to know how to <strong>ask for it</strong>.</p>
+</div>
+
+<!-- SLIDE 4: What is an API -->
+<div class="slide">
+  <h2>🔌 What Is an API?</h2>
+  <p style="margin-bottom: 10px;"><strong>API</strong> = Application Programming Interface</p>
+  <p>A way for your code to <strong>talk to another computer</strong> and ask for data.</p>
+  <div class="callout" style="margin-top: 30px;">
+    Think of it like <strong>ordering from a restaurant menu</strong>. You don't go into the kitchen — you just place your order, and the kitchen sends back your food.
+  </div>
+</div>
+
+<!-- SLIDE 5: Restaurant analogy -->
+<div class="slide">
+  <h2>🍽️ The Restaurant Analogy</h2>
+  <div class="analogy-row">
+    <div class="analogy-card">
+      <div class="icon">👤</div>
+      <div class="label">You</div>
+      <div class="value">Your Code</div>
+    </div>
+    <div class="analogy-card">
+      <div class="icon">📋</div>
+      <div class="label">Menu</div>
+      <div class="value">API Docs</div>
+    </div>
+    <div class="analogy-card">
+      <div class="icon">📝</div>
+      <div class="label">Order Slip</div>
+      <div class="value">URL</div>
+    </div>
+    <div class="analogy-card">
+      <div class="icon">👨‍🍳</div>
+      <div class="label">Kitchen</div>
+      <div class="value">Server</div>
+    </div>
+    <div class="analogy-card">
+      <div class="icon">🍽️</div>
+      <div class="label">Your Meal</div>
+      <div class="value">JSON Data</div>
+    </div>
+  </div>
+  <p style="margin-top: 20px;">You send a <strong>URL</strong> (your order) → the server sends back <strong>JSON</strong> (your meal).</p>
+</div>
+
+<!-- SLIDE 6: Key vocab -->
+<div class="slide">
+  <h2>📖 Key Vocabulary</h2>
+  <table>
+    <tr><th>Term</th><th>What It Means</th></tr>
+    <tr><td><strong>API</strong></td><td>A way for programs to talk to each other</td></tr>
+    <tr><td><strong>URL</strong></td><td>The address where you send your request</td></tr>
+    <tr><td><strong>JSON</strong></td><td>The format data comes back in — objects & arrays!</td></tr>
+    <tr><td><strong>Request</strong></td><td>Asking for data</td></tr>
+    <tr><td><strong>Response</strong></td><td>The data you get back</td></tr>
+  </table>
+  <div class="callout green" style="margin-top: 16px;">
+    ✅ You already know JSON — it's the <code>{ key: value }</code> objects and <code>[ arrays ]</code> from Week 3!
+  </div>
+</div>
+
+<!-- SLIDE 7: Let's try it -->
+<div class="slide">
+  <h2>🧪 Let's See It Live</h2>
+  <p style="margin-bottom: 20px;">Paste this URL into your browser address bar:</p>
+  <div class="code-block" style="font-size: 0.75rem; word-break: break-all; white-space: pre-wrap;">https://api.open-meteo.com/v1/forecast?latitude=40.65&longitude=-73.95&hourly=precipitation&forecast_days=7</div>
+  <p style="margin-top: 20px;">What you see is <strong>JSON</strong> — the same objects and arrays you wrote last week.</p>
+  <p>Just way more of it. 🤯</p>
+</div>
+
+<!-- SLIDE 8: Reading the menu -->
+<div class="slide">
+  <h2>📋 Reading the Menu</h2>
+  <p style="margin-bottom: 20px;">Before you can order, you need to <strong>read the API docs</strong>.</p>
+  <p>We're using <strong>Open-Meteo</strong> — a free weather API.</p>
+  <ul>
+    <li>Go to the docs page</li>
+    <li>Pick a <strong>location</strong> (latitude / longitude)</li>
+    <li>Pick what <strong>data</strong> you want (rain, temp, wind…)</li>
+    <li>It builds the <strong>URL</strong> for you!</li>
+  </ul>
+  <p class="small"><a href="https://open-meteo.com/" target="_blank" style="color: #60a5fa; text-decoration: underline;">open-meteo.com</a></p>
+</div>
+
+<!-- SLIDE 9: URL breakdown -->
+<div class="slide">
+  <h2>🔗 Breaking Down the URL</h2>
+  <p style="margin-bottom: 20px; font-size: 0.95rem;">Each <code>&</code> adds another item to your order:</p>
+  <div class="code-block" style="line-height: 2.2; font-size: 0.82rem;"><span class="str">https://api.open-meteo.com/v1/forecast</span>   <span class="cmt">← the "restaurant"</span>
+  <span class="key">?latitude</span>=<span class="num">40.65</span>&<span class="key">longitude</span>=<span class="num">-73.95</span>       <span class="cmt">← where (Brooklyn)</span>
+  &<span class="key">hourly</span>=<span class="str">precipitation,rain</span>                <span class="cmt">← what hourly data</span>
+  &<span class="key">daily</span>=<span class="str">sunrise,sunset</span>                     <span class="cmt">← what daily data</span>
+  &<span class="key">timezone</span>=<span class="str">auto</span>                             <span class="cmt">← when</span>
+  &<span class="key">forecast_days</span>=<span class="num">7</span>                          <span class="cmt">← how much</span>
+  &<span class="key">temperature_unit</span>=<span class="str">fahrenheit</span>             <span class="cmt">← preferences</span></div>
+</div>
+
+<!-- SLIDE 10: Response shape -->
+<div class="slide">
+  <h2>📦 What Comes Back?</h2>
+  <div class="two-col">
+    <div>
+      <h3>Week 3 (your data)</h3>
+      <div class="code-block" style="font-size: 0.78rem;">{
+  <span class="key">"day"</span>: <span class="str">"Mon"</span>,
+  <span class="key">"hours"</span>: <span class="num">8</span>,
+  <span class="key">"restful"</span>: <span class="num">3</span>
+}</div>
+      <p style="font-size: 0.85rem; text-align: left;">7 data points</p>
+    </div>
+    <div>
+      <h3>Week 4 (API data)</h3>
+      <div class="code-block" style="font-size: 0.78rem;">{
+  <span class="key">"hourly"</span>: {
+    <span class="key">"time"</span>: [<span class="str">"2025-04-22T00:00"</span>, ...],
+    <span class="key">"precipitation"</span>: [<span class="num">0.0</span>, <span class="num">0.012</span>, ...]
+  }
+}</div>
+      <p style="font-size: 0.85rem; text-align: left;">168 data points (24h × 7 days)</p>
+    </div>
+  </div>
+  <div class="callout green" style="margin-top: 16px;">
+    ✅ Same shape — just <strong>bigger</strong>. Still objects, still arrays, still dot notation.
+  </div>
+</div>
+
+<!-- SLIDE 11: Dot notation -->
+<div class="slide">
+  <h2>🔍 Accessing the Data</h2>
+  <p style="margin-bottom: 20px;">Chain dots to dig into nested objects:</p>
+  <div class="code-block"><span class="cmt">// The full response object</span>
+data
+
+<span class="cmt">// The hourly section</span>
+data.<span class="key">hourly</span>
+
+<span class="cmt">// The precipitation array (168 numbers)</span>
+data.<span class="key">hourly</span>.<span class="key">precipitation</span>
+
+<span class="cmt">// The first hour's rainfall</span>
+data.<span class="key">hourly</span>.<span class="key">precipitation</span>[<span class="num">0</span>]    <span class="cmt">// → 0.0</span></div>
+  <p style="margin-top: 12px;">Same dot notation as <code>sleepData.hours</code> — just deeper!</p>
+</div>
+
+<!-- SLIDE 12: preload -->
+<div class="slide">
+  <h2>⏳ Loading Data in p5.js</h2>
+  <p style="margin-bottom: 20px;">New function: <code>preload()</code></p>
+  <div class="code-block"><span class="kw">let</span> data;
+
+<span class="kw">function</span> <span class="fn">preload</span>() {
+  data = <span class="fn">loadJSON</span>(apiURL);  <span class="cmt">// fetch the data from the API</span>
+}
+
+<span class="kw">function</span> <span class="fn">setup</span>() {
+  <span class="cmt">// data is ready here — guaranteed!</span>
+}
+
+<span class="kw">function</span> <span class="fn">draw</span>() {
+  <span class="cmt">// use data freely</span>
+}</div>
+  <div class="callout blue" style="margin-top: 16px;">
+    <strong>Why preload?</strong> It pauses everything until the data arrives. Without it, <code>setup()</code> might run before the data is ready → crash.
+  </div>
+</div>
+
+<!-- SLIDE 13: Translation decisions -->
+<div class="slide">
+  <h2>🎛️ The Translation Decisions</h2>
+  <p style="margin-bottom: 16px;">You have 168 numbers. What do they <strong>become</strong>?</p>
+  <table>
+    <tr><th>Decision</th><th>Variable</th><th>Controls</th></tr>
+    <tr><td>What's "a lot" of rain?</td><td><code>ceiling = 0.15</code></td><td>Max of the scale</td></tr>
+    <tr><td>When is it silent?</td><td><code>threshold = 0</code></td><td>Skip quiet hours</td></tr>
+    <tr><td>Lowest pitch</td><td><code>pitchLow = 400</code> Hz</td><td>Light rain sound</td></tr>
+    <tr><td>Highest pitch</td><td><code>pitchHigh = 900</code> Hz</td><td>Heavy rain sound</td></tr>
+    <tr><td>Speed</td><td><code>tempo = 100</code> ms</td><td>How fast the week plays</td></tr>
+  </table>
+</div>
+
+<!-- SLIDE 14: map is back -->
+<div class="slide">
+  <h2>🔁 <code>map()</code> Is Back!</h2>
+  <p style="margin-bottom: 20px;">Same function from Week 3 — now translating rain → pitch:</p>
+  <div class="code-block"><span class="cmt">// Week 3: sleep data → circle size</span>
+<span class="kw">let</span> d = <span class="fn">map</span>(i, <span class="num">0</span>, numCircles, maxDiameter, minDiameter);
+
+<span class="cmt">// Week 4: rain data → sound frequency</span>
+<span class="kw">let</span> freq = <span class="fn">map</span>(val, threshold, ceiling, pitchLow, pitchHigh);</div>
+  <p style="margin-top: 20px;">Different data, different output — <strong>same concept</strong>.</p>
+</div>
+
+<!-- SLIDE 15: Your turn -->
+<div class="slide">
+  <h2>🧪 Your Turn — Experiments</h2>
+  <ul>
+    <li>Change the <strong>location</strong> to your hometown (find your lat/long)</li>
+    <li>Change <code>ceiling</code> — what happens really low vs really high?</li>
+    <li>Change <code>pitchLow</code> and <code>pitchHigh</code> — ominous vs cheerful</li>
+    <li>Change <code>tempo</code> — speed up or slow down the week</li>
+    <li>Change <code>threshold</code> — how much rain is "worth hearing"?</li>
+    <li>Try a different data field: <code>visibility</code>, <code>wind_gusts_10m</code></li>
+  </ul>
+  <p class="small">Every number is a creative decision. There is no wrong answer.</p>
+</div>
+
+<!-- SLIDE 16: Closing -->
+<div class="slide">
+  <p class="big-emoji">🌧️ → 🔢 → 🎵</p>
+  <h1 class="gradient">Rain. Numbers. Sound.</h1>
+  <p style="margin-top: 20px;">Same data, infinite interpretations.</p>
+  <div style="margin-top: 30px;">
+    <a href="https://editor.p5js.org/lara.mcconnaughey/sketches/zTJXjJYI2" target="_blank" class="link-button" style="display: inline-block; background: #a78bfa; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem;">Open Code Demo in p5.js Editor →</a>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+
+function show(n) {
+  current = Math.max(0, Math.min(n, total - 1));
+  slides.forEach((s, i) => s.classList.toggle('active', i === current));
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+}
+
+function next() { show(current + 1); }
+function prev() { show(current - 1); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+});
+
+show(0);
+</script>
+</body>
+</html>
