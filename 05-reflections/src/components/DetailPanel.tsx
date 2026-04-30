@@ -234,6 +234,12 @@ export default function DetailPanel({
               <p className="text-xs text-[#7D9176] font-light tracking-wide">◎ student</p>
             )}
 
+            {node.is_student && !canEdit && (
+              <p className="text-xs text-[#A9A39D] font-light italic">
+                Enter &ldquo;{node.title}&rdquo; as your name to edit this node.
+              </p>
+            )}
+
             {node.description && (
               <p className="text-sm font-light text-[#4A4540] leading-relaxed">{node.description}</p>
             )}

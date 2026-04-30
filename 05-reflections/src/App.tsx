@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import ArcCanvas, { ARC_NODES, ZONE_RADIUS } from './components/ArcCanvas'
+import ArcCanvas, { ARC_NODES, ZONE_RADIUS, PENTAGON_CENTER, STUDENT_RING_R } from './components/ArcCanvas'
 import NodeObject, { nodeCanvasPos } from './components/NodeObject'
 import ConnectionLines from './components/ConnectionLines'
 import NameModal from './components/NameModal'
@@ -12,9 +12,23 @@ import { supabase, type ArcNode, type GardenNode } from './lib/supabase'
 const ADMIN_NAME = import.meta.env.VITE_ADMIN_NAME as string | undefined
 
 function computeSpreadPositions(nodes: GardenNode[]): Map<string, { x: number; y: number }> {
+  const pos = new Map<string, { x: number; y: number }>()
+
+  // Students get evenly spaced slots around the outer ring, sorted by title
+  const students = nodes.filter(n => n.is_student).sort((a, b) => a.title.localeCompare(b.title))
+  students.forEach((n, i) => {
+    const angle = (i / students.length) * 2 * Math.PI - Math.PI / 2
+    pos.set(n.id, {
+      x: PENTAGON_CENTER.x + STUDENT_RING_R * Math.cos(angle),
+      y: PENTAGON_CENTER.y + STUDENT_RING_R * Math.sin(angle),
+    })
+  })
+
+  // Non-students use the existing spread simulation
   const MIN_DIST = 46
-  const pos = new Map(nodes.map(n => [n.id, { ...nodeCanvasPos(n) }]))
-  const ids = nodes.map(n => n.id)
+  const others = nodes.filter(n => !n.is_student)
+  for (const n of others) pos.set(n.id, { ...nodeCanvasPos(n) })
+  const ids = others.map(n => n.id)
 
   for (let iter = 0; iter < 80; iter++) {
     let anyMoved = false
@@ -80,6 +94,18 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
 
   const posMap = useMemo(() => computeSpreadPositions(nodes), [nodes])
+
+  const richnessMap = useMemo(() => {
+    const connCount = new Map<string, number>()
+    for (const c of connections) {
+      connCount.set(c.from_node_id, (connCount.get(c.from_node_id) ?? 0) + 1)
+      connCount.set(c.to_node_id, (connCount.get(c.to_node_id) ?? 0) + 1)
+    }
+    return new Map(nodes.map(n => {
+      const score = (n.description ? 1 : 0) + (n.external_url ? 1 : 0) + (connCount.get(n.id) ?? 0)
+      return [n.id, Math.min(score / 6, 1)]
+    }))
+  }, [nodes, connections])
   const selectedNode = selectedNodeId ? (nodes.find(n => n.id === selectedNodeId) ?? null) : null
   const isAdmin = !!(ADMIN_NAME && userName === ADMIN_NAME)
 
@@ -171,6 +197,7 @@ export default function App() {
             connectMode={connectMode}
             pos={posMap.get(node.id) ?? { x: 800, y: 460 }}
             onHoverChange={setHoveredNodeId}
+            richness={richnessMap.get(node.id) ?? 0}
           />
         ))}
       </ArcCanvas>

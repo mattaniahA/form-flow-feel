@@ -19,7 +19,8 @@ export default function NameModal({ onSubmit }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
       <div className="bg-[#F5F1E8] border border-[#C9C3B5] rounded-lg p-8 w-80 shadow-lg">
         <h2 className="text-lg font-light text-[#2A2520] mb-1">Welcome to the Garden</h2>
-        <p className="text-sm text-[#6B6560] font-light mb-6">What's your name?</p>
+        <p className="text-sm text-[#6B6560] font-light mb-1">What's your name?</p>
+        <p className="text-xs text-[#A9A39D] font-light mb-6">Use your full name to edit your student node.</p>
         <form onSubmit={handleSubmit}>
           <input
             autoFocus

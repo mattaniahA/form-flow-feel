@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect, type MouseEvent, type ReactNode } from 'react'
 
-const PENTAGON_CENTER = { x: 800, y: 460 }
+export const PENTAGON_CENTER = { x: 800, y: 460 }
 
 export const ARC_NODES = [
   { id: 'systems',     label: 'Systems + Sensibilities',      x: 800,  y: 110 },
@@ -12,7 +12,7 @@ export const ARC_NODES = [
 
 export type ArcNodeId = typeof ARC_NODES[number]['id']
 export const ZONE_RADIUS = 200
-export const STUDENT_RING_R = 580
+export const STUDENT_RING_R = 720
 
 const ARC_PATH = 'M 800,110 L 1133,352 L 1006,743 L 594,743 L 467,352'
 

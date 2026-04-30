@@ -124,12 +124,14 @@ interface Props {
   connectMode?: boolean
   pos: { x: number; y: number }
   onHoverChange?: (id: string | null) => void
+  richness?: number  // 0–1, how much to darken based on metadata density
 }
 
-export default function NodeObject({ node, onClick, isConnectSource, connectMode, pos, onHoverChange }: Props) {
+export default function NodeObject({ node, onClick, isConnectSource, connectMode, pos, onHoverChange, richness = 0 }: Props) {
   const [hovered, setHovered] = useState(false)
   const { x, y } = pos
   const color = pickColor(node.id, node.type)
+  const opacity = 0.5 + richness * 0.5
   const hash = idHash(node.id)
   const leafAngle = (hash * 97) % 180
 
@@ -139,6 +141,7 @@ export default function NodeObject({ node, onClick, isConnectSource, connectMode
   return (
     <g
       transform={`translate(${x} ${y}) scale(${hovered ? 1.25 : 1})`}
+      opacity={opacity}
       style={{ cursor, transition: 'transform 0.15s ease' }}
       onMouseDown={e => e.stopPropagation()}
       onDoubleClick={e => e.stopPropagation()}
