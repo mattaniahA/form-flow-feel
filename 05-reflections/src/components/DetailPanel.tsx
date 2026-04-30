@@ -14,12 +14,13 @@ interface Props {
   connections: Connection[]
   connectMode: boolean
   userName: string | null
+  isAdmin?: boolean
   onClose: () => void
   onStartConnect: () => void
 }
 
 export default function DetailPanel({
-  node, allNodes, connections, connectMode, userName, onClose, onStartConnect,
+  node, allNodes, connections, connectMode, userName, isAdmin = false, onClose, onStartConnect,
 }: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -54,6 +55,7 @@ export default function DetailPanel({
   }).filter(e => e.other) as { conn: Connection; other: GardenNode }[]
 
   const isOwner = !!(userName && node.created_by === userName)
+  const canEdit = isOwner || isAdmin
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -275,21 +277,21 @@ export default function DetailPanel({
                 className="w-full py-2 text-sm font-light text-[#2A2520] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >{connectMode ? 'Click another object…' : 'Link to another object'}</button>
 
-              {isOwner && (
+              {canEdit && (
                 <button
                   onClick={startEdit}
                   className="w-full py-2 text-sm font-light text-[#2A2520] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
                 >Edit this object</button>
               )}
 
-              {isOwner && !confirmDelete && (
+              {canEdit && !confirmDelete && (
                 <button
                   onClick={() => setConfirmDelete(true)}
                   className="w-full py-2 text-sm font-light text-[#A9A39D] hover:text-red-400 border border-[#C9C3B5] rounded hover:border-red-300 transition-colors cursor-pointer"
                 >Delete this object</button>
               )}
 
-              {isOwner && confirmDelete && (
+              {canEdit && confirmDelete && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => setConfirmDelete(false)}

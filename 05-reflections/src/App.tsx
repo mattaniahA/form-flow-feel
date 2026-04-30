@@ -5,8 +5,11 @@ import ConnectionLines from './components/ConnectionLines'
 import NameModal from './components/NameModal'
 import AddNodeModal from './components/AddNodeModal'
 import DetailPanel from './components/DetailPanel'
+import SettingsPanel from './components/SettingsPanel'
 import { useGardenData } from './hooks/useGardenData'
 import { supabase, type ArcNode, type GardenNode } from './lib/supabase'
+
+const ADMIN_NAME = import.meta.env.VITE_ADMIN_NAME as string | undefined
 
 function computeSpreadPositions(nodes: GardenNode[]): Map<string, { x: number; y: number }> {
   const MIN_DIST = 46
@@ -74,9 +77,11 @@ export default function App() {
   const [connectMode, setConnectMode] = useState(false)
   const [connectSourceId, setConnectSourceId] = useState<string | null>(null)
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
 
   const posMap = useMemo(() => computeSpreadPositions(nodes), [nodes])
   const selectedNode = selectedNodeId ? (nodes.find(n => n.id === selectedNodeId) ?? null) : null
+  const isAdmin = !!(ADMIN_NAME && userName === ADMIN_NAME)
 
   function handleCanvasClick() {
     if (connectMode) {
@@ -132,6 +137,24 @@ export default function App() {
         </div>
       )}
 
+      {/* Settings gear — bottom-left */}
+      <button
+        onClick={() => setShowSettings(s => !s)}
+        className="fixed bottom-5 left-5 z-10 px-3 py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors cursor-pointer"
+        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+      >
+        {isAdmin ? '⚙ admin' : '⚙ settings'}
+      </button>
+
+      {showSettings && userName && (
+        <SettingsPanel
+          userName={userName}
+          isAdmin={isAdmin}
+          onNameChange={name => { setUserName(name); setShowSettings(false) }}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
       <ArcCanvas onCanvasClick={handleCanvasClick} onCanvasDoubleClick={handleCanvasDoubleClick} connectMode={connectMode}>
         <ConnectionLines
           connections={connections}
@@ -159,6 +182,7 @@ export default function App() {
           connections={connections}
           connectMode={connectMode}
           userName={userName}
+          isAdmin={isAdmin}
           onClose={closePanel}
           onStartConnect={handleStartConnect}
         />
