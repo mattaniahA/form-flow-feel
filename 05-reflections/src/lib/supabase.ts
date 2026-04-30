@@ -19,6 +19,7 @@ export interface GardenNode {
   external_url: string | null
   created_by: string
   is_seed: boolean
+  is_student: boolean
   created_at: string
 }
 

@@ -5,7 +5,7 @@ import { ARC_NODES } from './ArcCanvas'
 const TYPE_LABELS: Record<NodeType, string> = {
   project: '❀ project',
   person:  '● person',
-  topic:   '◗ topic',
+  topic:   '◗ idea',
 }
 
 interface Props {
@@ -33,6 +33,7 @@ export default function DetailPanel({
   const [editDescription, setEditDescription] = useState(node.description ?? '')
   const [editUrl, setEditUrl]                 = useState(node.external_url ?? '')
   const [editArcNode, setEditArcNode]         = useState<ArcNode | null>(node.arc_node)
+  const [editIsStudent, setEditIsStudent]     = useState(node.is_student ?? false)
 
   // Keep edit fields in sync if the node updates via realtime while not editing
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function DetailPanel({
       setEditDescription(node.description ?? '')
       setEditUrl(node.external_url ?? '')
       setEditArcNode(node.arc_node)
+      setEditIsStudent(node.is_student ?? false)
     }
   }, [node, editing])
 
@@ -73,6 +75,7 @@ export default function DetailPanel({
     setEditDescription(node.description ?? '')
     setEditUrl(node.external_url ?? '')
     setEditArcNode(node.arc_node)
+    setEditIsStudent(node.is_student ?? false)
     setEditError(null)
     setConfirmDelete(false)
     setEditing(true)
@@ -88,6 +91,7 @@ export default function DetailPanel({
       description:  editDescription.trim() || null,
       external_url: editUrl.trim() || null,
       arc_node:     editArcNode,
+      is_student:   editType === 'person' ? editIsStudent : false,
     }).eq('id', node.id)
     setSaving(false)
     if (error) { setEditError('Save failed. Try again.'); return }
@@ -120,7 +124,7 @@ export default function DetailPanel({
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <span className="text-xs text-[#8B8378] font-light uppercase tracking-wider">
-                {editing ? editType : node.type}
+                {editing ? TYPE_LABELS[editType] : TYPE_LABELS[node.type]}
               </span>
               <h3 className="text-base font-light text-[#2A2520] mt-0.5 leading-snug">
                 {editing
@@ -156,6 +160,19 @@ export default function DetailPanel({
                 ))}
               </div>
             </div>
+
+            {/* Student toggle — only for person */}
+            {editType === 'person' && (
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={editIsStudent}
+                  onChange={e => setEditIsStudent(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-[#8B8378] cursor-pointer"
+                />
+                <span className="text-sm font-light text-[#4A4540]">student</span>
+              </label>
+            )}
 
             {/* Title */}
             <div>
@@ -213,6 +230,10 @@ export default function DetailPanel({
         ) : (
           /* ── View mode ── */
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {node.type === 'person' && node.is_student && (
+              <p className="text-xs text-[#7D9176] font-light tracking-wide">◎ student</p>
+            )}
+
             {node.description && (
               <p className="text-sm font-light text-[#4A4540] leading-relaxed">{node.description}</p>
             )}

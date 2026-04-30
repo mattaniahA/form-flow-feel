@@ -13,7 +13,7 @@ interface Props {
 const TYPE_LABELS: Record<NodeType, string> = {
   project: '❀ project',
   person:  '● person',
-  topic:   '◗ topic',
+  topic:   '◗ idea',
 }
 
 export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy, onClose }: Props) {
@@ -22,6 +22,7 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
   const [description, setDescription] = useState('')
   const [url, setUrl] = useState('')
   const [arcNode, setArcNode] = useState<ArcNode | null>(initialArcNode)
+  const [isStudent, setIsStudent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,16 +32,18 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
     setSubmitting(true)
     setError(null)
 
+    const student = type === 'person' && isStudent
     const { error: err } = await supabase.from('nodes').insert({
       type,
       title: title.trim(),
       description: description.trim() || null,
-      arc_node: arcNode,
-      x: arcNode ? clickX : null,
-      y: arcNode ? clickY : null,
+      arc_node: student ? null : arcNode,
+      x: (!student && arcNode) ? clickX : null,
+      y: (!student && arcNode) ? clickY : null,
       external_url: url.trim() || null,
       created_by: createdBy,
       is_seed: false,
+      is_student: student,
     })
 
     if (err) {
@@ -80,6 +83,19 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
             ))}
           </div>
 
+          {/* Student toggle — only for person */}
+          {type === 'person' && (
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={isStudent}
+                onChange={e => setIsStudent(e.target.checked)}
+                className="w-3.5 h-3.5 accent-[#8B8378] cursor-pointer"
+              />
+              <span className="text-sm font-light text-[#4A4540]">student</span>
+            </label>
+          )}
+
           {/* Title */}
           <div>
             <input
@@ -111,32 +127,34 @@ export default function AddNodeModal({ initialArcNode, clickX, clickY, createdBy
             className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
           />
 
-          {/* Arc node — optional, click again to deselect */}
-          <div>
-            <p className="text-xs text-[#8B8378] font-light mb-1.5">
-              Week <span className="text-[#A9A39D]">(optional)</span>
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {ARC_NODES.map(an => (
-                <button
-                  key={an.id}
-                  type="button"
-                  onClick={() => setArcNode(arcNode === an.id ? null : an.id as ArcNode)}
-                  className={`px-2.5 py-1 text-xs font-light rounded border transition-colors cursor-pointer
-                    ${arcNode === an.id
-                      ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
-                      : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
-                >
-                  {an.label}
-                </button>
-              ))}
-            </div>
-            {!arcNode && (
-              <p className="text-xs text-[#A9A39D] mt-1.5">
-                No week selected — will appear in the center of the canvas.
+          {/* Arc node — hidden for students, who always land on the outer ring */}
+          {!(type === 'person' && isStudent) && (
+            <div>
+              <p className="text-xs text-[#8B8378] font-light mb-1.5">
+                Week <span className="text-[#A9A39D]">(optional)</span>
               </p>
-            )}
-          </div>
+              <div className="flex flex-wrap gap-1.5">
+                {ARC_NODES.map(an => (
+                  <button
+                    key={an.id}
+                    type="button"
+                    onClick={() => setArcNode(arcNode === an.id ? null : an.id as ArcNode)}
+                    className={`px-2.5 py-1 text-xs font-light rounded border transition-colors cursor-pointer
+                      ${arcNode === an.id
+                        ? 'border-[#8B8378] bg-[#EDE9E0] text-[#2A2520]'
+                        : 'border-[#C9C3B5] text-[#6B6560] hover:bg-[#EDE9E0]'}`}
+                  >
+                    {an.label}
+                  </button>
+                ))}
+              </div>
+              {!arcNode && (
+                <p className="text-xs text-[#A9A39D] mt-1.5">
+                  No week selected — will appear in the center of the canvas.
+                </p>
+              )}
+            </div>
+          )}
 
           {error && <p className="text-xs text-red-500">{error}</p>}
 

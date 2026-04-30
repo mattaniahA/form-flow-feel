@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ARC_NODES, ZONE_RADIUS } from './ArcCanvas'
+import { ARC_NODES, ZONE_RADIUS, STUDENT_RING_R } from './ArcCanvas'
 import type { GardenNode } from '../lib/supabase'
 
 const PALETTES = {
@@ -23,6 +23,18 @@ export function nodeCanvasPos(node: GardenNode): { x: number; y: number } {
   const hash = idHash(node.id)
   const nx = node.x ?? ((hash * 17) % 97) / 97
   const ny = node.y ?? ((hash * 31) % 97) / 97
+
+  if (node.is_student) {
+    // Spread students around an outer ring encircling the whole pentagon.
+    // Golden-angle multiplier (137) gives nicely dispersed pseudo-random angles.
+    const angle = ((hash * 137) % 360) * (Math.PI / 180)
+    const rJitter = ((hash * 7) % 20) - 10
+    const r = STUDENT_RING_R + rJitter
+    return {
+      x: CANVAS_CENTER.x + r * Math.cos(angle),
+      y: CANVAS_CENTER.y + r * Math.sin(angle),
+    }
+  }
 
   if (!node.arc_node) {
     // No week assigned — float near the canvas center with gentle jitter
@@ -77,11 +89,27 @@ function PersonCircle({ color, initial }: { color: string; initial: string }) {
   )
 }
 
+function StudentRing({ color }: { color: string }) {
+  const count = 10
+  const r = 26
+  return (
+    <>
+      <circle r={r} fill="none" stroke={color} strokeWidth={0.9} opacity={0.3} strokeDasharray="2 3" />
+      {Array.from({ length: count }, (_, i) => {
+        const a = (i / count) * 2 * Math.PI - Math.PI / 2
+        return (
+          <circle key={i} cx={r * Math.cos(a)} cy={r * Math.sin(a)} r={2.4} fill={color} opacity={0.55} />
+        )
+      })}
+    </>
+  )
+}
+
 function Leaf({ color, angle }: { color: string; angle: number }) {
   return (
     <g transform={`rotate(${angle})`}>
       <path
-        d="M 0,-17 C 13,-7 13,7 0,17 C -13,7 -13,-7 0,-17"
+        d="M 0,-13 C 10,-5 10,5 0,13 C -10,5 -10,-5 0,-13"
         fill={color}
         opacity={0.88}
       />
@@ -103,7 +131,7 @@ export default function NodeObject({ node, onClick, isConnectSource, connectMode
   const { x, y } = pos
   const color = pickColor(node.id, node.type)
   const hash = idHash(node.id)
-  const leafAngle = ((hash % 40) - 20)
+  const leafAngle = (hash * 97) % 180
 
   const initial = node.title.trim()[0]?.toUpperCase() ?? '?'
   const cursor = connectMode ? 'crosshair' : 'pointer'

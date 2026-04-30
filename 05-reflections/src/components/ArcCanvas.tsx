@@ -12,6 +12,7 @@ export const ARC_NODES = [
 
 export type ArcNodeId = typeof ARC_NODES[number]['id']
 export const ZONE_RADIUS = 200
+export const STUDENT_RING_R = 580
 
 const ARC_PATH = 'M 800,110 L 1133,352 L 1006,743 L 594,743 L 467,352'
 
@@ -162,6 +163,18 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
               <path key={node.id} id={`label-arc-${node.id}`} d={labelArcPath(node)} />
             ))}
           </defs>
+
+          {/* Student ring — outer circle where student nodes are placed */}
+          <circle
+            cx={PENTAGON_CENTER.x}
+            cy={PENTAGON_CENTER.y}
+            r={STUDENT_RING_R}
+            fill="none"
+            stroke="#A8B89A"
+            strokeWidth={1}
+            strokeDasharray="3 8"
+            opacity={0.35}
+          />
 
           {/* Zone circles */}
           {ARC_NODES.map(node => (
