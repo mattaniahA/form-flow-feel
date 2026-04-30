@@ -17,10 +17,16 @@ export interface GardenNode {
   x: number | null
   y: number | null
   external_url: string | null
-  image_url: string | null
   created_by: string
   is_seed: boolean
   is_student: boolean
+  created_at: string
+}
+
+export interface NodeImage {
+  id: string
+  node_id: string
+  url: string
   created_at: string
 }
 

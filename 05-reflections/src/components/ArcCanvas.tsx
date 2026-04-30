@@ -167,8 +167,6 @@ export default function ArcCanvas({ children, onCanvasClick, onCanvasDoubleClick
     onCanvasDoubleClick(x, y)
   }, [onCanvasDoubleClick, toCanvasCoords])
 
-  const resetView = () => setTransform({ x: 0, y: 0, scale: 1 })
-
   const { x, y, scale } = transform
 
   return (

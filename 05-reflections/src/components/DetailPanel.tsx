@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase, type GardenNode, type Connection, type NodeType, type ArcNode } from '../lib/supabase'
+import { supabase, type GardenNode, type Connection, type NodeImage, type NodeType, type ArcNode } from '../lib/supabase'
 import { ARC_NODES } from './ArcCanvas'
 
 const TYPE_LABELS: Record<NodeType, string> = {
@@ -35,9 +35,19 @@ export default function DetailPanel({
   const [editArcNode, setEditArcNode]         = useState<ArcNode | null>(node.arc_node)
   const [editIsStudent, setEditIsStudent]     = useState(node.is_student ?? false)
 
-  const [imageFile, setImageFile]       = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [uploading, setUploading]       = useState(false)
+  const [images, setImages]               = useState<NodeImage[]>([])
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [imageUploading, setImageUploading] = useState(false)
+  const [deletingImageId, setDeletingImageId] = useState<string | null>(null)
+
+  // Fetch images for this node
+  useEffect(() => {
+    setImages([])
+    setLightboxIndex(null)
+    supabase.from('node_images').select('*').eq('node_id', node.id).order('created_at').then(({ data }) => {
+      if (data) setImages(data)
+    })
+  }, [node.id])
 
   // Keep edit fields in sync if the node updates via realtime while not editing
   useEffect(() => {
@@ -65,13 +75,19 @@ export default function DetailPanel({
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
+      if (lightboxIndex !== null) {
+        if (e.key === 'Escape') { setLightboxIndex(null); return }
+        if (e.key === 'ArrowRight') { setLightboxIndex(i => i !== null && i < images.length - 1 ? i + 1 : i); return }
+        if (e.key === 'ArrowLeft')  { setLightboxIndex(i => i !== null && i > 0 ? i - 1 : i); return }
+        return
+      }
       if (e.key === 'Escape') {
         if (editing) { setEditing(false) } else { onClose() }
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose, editing])
+  }, [onClose, editing, lightboxIndex, images.length])
 
   function startEdit() {
     setEditType(node.type)
@@ -82,43 +98,57 @@ export default function DetailPanel({
     setEditIsStudent(node.is_student ?? false)
     setEditError(null)
     setConfirmDelete(false)
-    setImageFile(null)
-    setImagePreview(null)
-    setUploading(false)
     setEditing(true)
   }
 
-  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleAddImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    e.target.value = ''
     const accepted = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
     if (!accepted.includes(file.type)) { setEditError('Only JPEG, PNG, GIF, or WebP accepted.'); return }
     if (file.size > 5 * 1024 * 1024) { setEditError('Image must be under 5 MB.'); return }
-    setImageFile(file)
     setEditError(null)
-    const reader = new FileReader()
-    reader.onload = ev => setImagePreview(ev.target?.result as string)
-    reader.readAsDataURL(file)
+    setImageUploading(true)
+    const ext = file.name.split('.').pop() ?? 'jpg'
+    const imgId = crypto.randomUUID()
+    const path = `${node.id}/${imgId}.${ext}`
+    const { error: upErr } = await supabase.storage
+      .from('node-images')
+      .upload(path, file, { contentType: file.type })
+    if (upErr) { setEditError('Upload failed. Try again.'); setImageUploading(false); return }
+    const { data: { publicUrl } } = supabase.storage.from('node-images').getPublicUrl(path)
+    const { data: newImg } = await supabase.from('node_images')
+      .insert({ node_id: node.id, url: publicUrl })
+      .select().single()
+    if (newImg) setImages(prev => [...prev, newImg])
+    setImageUploading(false)
+  }
+
+  async function handleDeleteImage(img: NodeImage) {
+    setDeletingImageId(img.id)
+    // Extract storage path from public URL
+    const match = img.url.match(/node-images\/(.+)$/)
+    if (match) await supabase.storage.from('node-images').remove([match[1]])
+    await supabase.from('node_images').delete().eq('id', img.id)
+    setImages(prev => {
+      const next = prev.filter(i => i.id !== img.id)
+      setLightboxIndex(idx => {
+        if (idx === null) return null
+        const pos = prev.findIndex(i => i.id === img.id)
+        if (pos < idx) return idx - 1
+        if (pos === idx) return next.length > 0 ? Math.min(idx, next.length - 1) : null
+        return idx
+      })
+      return next
+    })
+    setDeletingImageId(null)
   }
 
   async function handleSave() {
     if (!editTitle.trim()) return
     setSaving(true)
     setEditError(null)
-
-    let newImageUrl = node.image_url
-    if (imageFile) {
-      setUploading(true)
-      const ext = imageFile.name.split('.').pop() ?? 'jpg'
-      const { error: upErr } = await supabase.storage
-        .from('node-images')
-        .upload(`${node.id}/avatar.${ext}`, imageFile, { upsert: true, contentType: imageFile.type })
-      setUploading(false)
-      if (upErr) { setEditError('Image upload failed. Try again.'); setSaving(false); return }
-      const { data } = supabase.storage.from('node-images').getPublicUrl(`${node.id}/avatar.${ext}`)
-      newImageUrl = data.publicUrl
-    }
-
     const { error } = await supabase.from('nodes').update({
       type:         editType,
       title:        editTitle.trim().slice(0, 80),
@@ -126,13 +156,10 @@ export default function DetailPanel({
       external_url: editUrl.trim() || null,
       arc_node:     editArcNode,
       is_student:   editType === 'person' ? editIsStudent : false,
-      image_url:    newImageUrl,
     }).eq('id', node.id)
     setSaving(false)
     if (error) { setEditError('Save failed. Try again.'); return }
     setEditing(false)
-    setImageFile(null)
-    setImagePreview(null)
   }
 
   async function handleDeleteNode() {
@@ -242,25 +269,42 @@ export default function DetailPanel({
               className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
             />
 
-            {/* Image */}
+            {/* Images */}
             <div>
               <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">
-                Image <span className="normal-case text-[#A9A39D]">(optional · max 5 MB)</span>
+                Images <span className="normal-case text-[#A9A39D]">(optional · max 5 MB each)</span>
               </p>
-              {(imagePreview ?? node.image_url) && (
-                <img
-                  src={imagePreview ?? node.image_url!}
-                  alt="preview"
-                  className="w-full h-32 object-cover rounded mb-2 border border-[#C9C3B5]"
-                />
+              {images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {images.map(img => (
+                    <div key={img.id} className="relative group">
+                      <img
+                        src={img.url}
+                        alt=""
+                        className="w-20 h-20 object-cover rounded border border-[#C9C3B5]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage(img)}
+                        disabled={deletingImageId === img.id}
+                        className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/50 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 cursor-pointer disabled:opacity-30"
+                      >×</button>
+                    </div>
+                  ))}
+                </div>
               )}
               <label className="block cursor-pointer">
-                <span className="w-full py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors flex items-center justify-center">
-                  {node.image_url || imageFile ? 'Replace image' : 'Upload image'}
+                <span className={`w-full py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors flex items-center justify-center gap-1 ${imageUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                  {imageUploading ? 'Uploading…' : '+ Add image'}
                 </span>
-                <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="sr-only" onChange={handleImageSelect} />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="sr-only"
+                  onChange={handleAddImage}
+                  disabled={imageUploading}
+                />
               </label>
-              {uploading && <p className="text-xs text-[#8B8378] mt-1">Uploading…</p>}
             </div>
 
             {/* Week */}
@@ -288,13 +332,18 @@ export default function DetailPanel({
         ) : (
           /* ── View mode ── */
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
-            {node.image_url && (
-              <img
-                src={node.image_url}
-                alt={node.title}
-                className="w-full rounded object-cover border border-[#C9C3B5]"
-                style={{ maxHeight: '180px' }}
-              />
+            {images.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {images.map((img, i) => (
+                  <img
+                    key={img.id}
+                    src={img.url}
+                    alt=""
+                    onClick={() => setLightboxIndex(i)}
+                    className="w-20 h-20 object-cover rounded border border-[#C9C3B5] cursor-zoom-in flex-shrink-0"
+                  />
+                ))}
+              </div>
             )}
 
             {node.type === 'person' && node.is_student && (
@@ -308,7 +357,7 @@ export default function DetailPanel({
             )}
 
             {node.description && (
-              <p className="text-sm font-light text-[#4A4540] leading-relaxed">{node.description}</p>
+              <p className="text-sm font-light text-[#4A4540] leading-relaxed whitespace-pre-wrap">{node.description}</p>
             )}
 
             {node.external_url && (
@@ -361,7 +410,7 @@ export default function DetailPanel({
                 onClick={handleSave}
                 disabled={!editTitle.trim() || saving}
                 className="flex-1 py-2 text-sm font-light text-[#2A2520] border border-[#8B8378] rounded bg-[#EDE9E0] hover:bg-[#E0DAD0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >{saving ? (uploading ? 'Uploading…' : 'Saving…') : 'Save'}</button>
+              >{saving ? 'Saving…' : 'Save'}</button>
             </div>
           ) : (
             <>
@@ -402,6 +451,38 @@ export default function DetailPanel({
           )}
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && images[lightboxIndex] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={() => setLightboxIndex(null)}
+        >
+          {images.length > 1 && (
+            <button
+              onClick={e => { e.stopPropagation(); setLightboxIndex(i => i !== null && i > 0 ? i - 1 : i) }}
+              className="absolute left-4 text-white/70 hover:text-white text-3xl leading-none cursor-pointer select-none px-2"
+            >‹</button>
+          )}
+          <img
+            src={images[lightboxIndex].url}
+            alt=""
+            onClick={e => e.stopPropagation()}
+            className="max-w-[85vw] max-h-[85vh] object-contain rounded shadow-2xl"
+          />
+          {images.length > 1 && (
+            <button
+              onClick={e => { e.stopPropagation(); setLightboxIndex(i => i !== null && i < images.length - 1 ? i + 1 : i) }}
+              className="absolute right-4 text-white/70 hover:text-white text-3xl leading-none cursor-pointer select-none px-2"
+            >›</button>
+          )}
+          {images.length > 1 && (
+            <p className="absolute bottom-4 text-white/50 text-xs">
+              {lightboxIndex + 1} / {images.length}
+            </p>
+          )}
+        </div>
+      )}
     </>
   )
 }

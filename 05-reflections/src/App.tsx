@@ -96,17 +96,6 @@ export default function App() {
 
   const posMap = useMemo(() => computeSpreadPositions(nodes), [nodes])
 
-  const richnessMap = useMemo(() => {
-    const connCount = new Map<string, number>()
-    for (const c of connections) {
-      connCount.set(c.from_node_id, (connCount.get(c.from_node_id) ?? 0) + 1)
-      connCount.set(c.to_node_id, (connCount.get(c.to_node_id) ?? 0) + 1)
-    }
-    return new Map(nodes.map(n => {
-      const score = (n.description ? 1 : 0) + (n.external_url ? 1 : 0) + (connCount.get(n.id) ?? 0)
-      return [n.id, Math.min(score / 6, 1)]
-    }))
-  }, [nodes, connections])
   const selectedNode = selectedNodeId ? (nodes.find(n => n.id === selectedNodeId) ?? null) : null
   const isAdmin = !!(ADMIN_NAME && userName === ADMIN_NAME)
 
