@@ -11,7 +11,25 @@ function relTime(d: Date) {
   const s = Math.floor((Date.now() - d.getTime()) / 1000)
   if (s < 60) return 'just now'
   if (s < 3600) return `${Math.floor(s / 60)}m ago`
-  return `${Math.floor(s / 3600)}h ago`
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`
+  return `${Math.floor(s / 86400)}d ago`
+}
+
+function buildInitialEntries(nodes: GardenNode[], connections: Connection[]): LogEntry[] {
+  const all: LogEntry[] = [
+    ...nodes.map(n => ({
+      id: `n-${n.id}`,
+      text: `${n.created_by} added "${n.title}"`,
+      at: new Date(n.created_at),
+    })),
+    ...connections.map(c => ({
+      id: `c-${c.id}`,
+      text: `${c.created_by} linked "${nodes.find(n => n.id === c.from_node_id)?.title ?? '?'}" → "${nodes.find(n => n.id === c.to_node_id)?.title ?? '?'}"`,
+      at: new Date(c.created_at),
+    })),
+  ]
+  all.sort((a, b) => b.at.getTime() - a.at.getTime())
+  return all.slice(0, 6)
 }
 
 function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
@@ -25,21 +43,25 @@ function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
   useEffect(() => {
     if (seenNodes.current === null) {
       seenNodes.current = new Set(nodes.map(n => n.id))
+      // connections already seeded — both are ready, populate from DB history
+      if (seenConns.current !== null) setEntries(buildInitialEntries(nodes, connections))
       return
     }
     const fresh: LogEntry[] = []
     for (const n of nodes) {
       if (!seenNodes.current.has(n.id)) {
         seenNodes.current.add(n.id)
-        fresh.push({ id: `n-${n.id}`, text: `${n.created_by} added "${n.title}"`, at: new Date() })
+        fresh.push({ id: `n-${n.id}`, text: `${n.created_by} added "${n.title}"`, at: new Date(n.created_at) })
       }
     }
     if (fresh.length) setEntries(prev => [...fresh, ...prev].slice(0, 6))
-  }, [nodes])
+  }, [nodes])  // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (seenConns.current === null) {
       seenConns.current = new Set(connections.map(c => c.id))
+      // nodes already seeded — both are ready, populate from DB history
+      if (seenNodes.current !== null) setEntries(buildInitialEntries(nodes, connections))
       return
     }
     const fresh: LogEntry[] = []
@@ -49,11 +71,11 @@ function useActivityLog(nodes: GardenNode[], connections: Connection[]) {
         const ns = nodesRef.current
         const from = ns.find(n => n.id === c.from_node_id)?.title ?? '?'
         const to   = ns.find(n => n.id === c.to_node_id)?.title ?? '?'
-        fresh.push({ id: `c-${c.id}`, text: `${c.created_by} linked "${from}" → "${to}"`, at: new Date() })
+        fresh.push({ id: `c-${c.id}`, text: `${c.created_by} linked "${from}" → "${to}"`, at: new Date(c.created_at) })
       }
     }
     if (fresh.length) setEntries(prev => [...fresh, ...prev].slice(0, 6))
-  }, [connections])
+  }, [connections])  // eslint-disable-line react-hooks/exhaustive-deps
 
   return entries
 }

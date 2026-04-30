@@ -1,23 +1,20 @@
 import { useState } from 'react'
-import { ARC_NODES, ZONE_RADIUS, STUDENT_RING_R } from './ArcCanvas'
+import { ARC_NODES, ZONE_RADIUS, STUDENT_RING_R, PENTAGON_CENTER } from './ArcCanvas'
 import type { GardenNode } from '../lib/supabase'
 
-const PALETTES = {
-  project: ['#E8B4A0', '#C97B63', '#D9A78E', '#B8654A'],
-  person:  ['#A8B89A', '#7D9176', '#C4D0B6', '#6B7F60'],
-  topic:   ['#9BA8B8', '#B5B0C4', '#7A8595', '#8E94A8'],
+const TYPE_COLORS: Record<GardenNode['type'], string> = {
+  project: '#D9A78E',
+  person:  '#A8B89A',
+  topic:   '#9BA8B8',
 }
 
 function idHash(id: string): number {
   return id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
 }
 
-function pickColor(id: string, type: GardenNode['type']): string {
-  const palette = PALETTES[type]
-  return palette[idHash(id) % palette.length]
+function pickColor(_id: string, type: GardenNode['type']): string {
+  return TYPE_COLORS[type]
 }
-
-const CANVAS_CENTER = { x: 800, y: 460 }
 
 export function nodeCanvasPos(node: GardenNode): { x: number; y: number } {
   const hash = idHash(node.id)
@@ -25,22 +22,19 @@ export function nodeCanvasPos(node: GardenNode): { x: number; y: number } {
   const ny = node.y ?? ((hash * 31) % 97) / 97
 
   if (node.is_student) {
-    // Spread students around an outer ring encircling the whole pentagon.
-    // Golden-angle multiplier (137) gives nicely dispersed pseudo-random angles.
     const angle = ((hash * 137) % 360) * (Math.PI / 180)
     const rJitter = ((hash * 7) % 20) - 10
     const r = STUDENT_RING_R + rJitter
     return {
-      x: CANVAS_CENTER.x + r * Math.cos(angle),
-      y: CANVAS_CENTER.y + r * Math.sin(angle),
+      x: PENTAGON_CENTER.x + r * Math.cos(angle),
+      y: PENTAGON_CENTER.y + r * Math.sin(angle),
     }
   }
 
   if (!node.arc_node) {
-    // No week assigned — float near the canvas center with gentle jitter
     return {
-      x: CANVAS_CENTER.x + (nx - 0.5) * 120,
-      y: CANVAS_CENTER.y + (ny - 0.5) * 120,
+      x: PENTAGON_CENTER.x + (nx - 0.5) * 120,
+      y: PENTAGON_CENTER.y + (ny - 0.5) * 120,
     }
   }
 
@@ -136,20 +130,6 @@ export default function NodeObject({ node, onClick, isConnectSource, connectMode
       {node.type === 'person'  && <PersonCircle color={color} initial={initial} />}
       {node.type === 'topic'   && <Leaf color={color} angle={leafAngle} />}
 
-      {/* Hover title */}
-      {hovered && (
-        <text
-          y={-26}
-          textAnchor="middle"
-          fontSize={11}
-          fontWeight={400}
-          fontFamily="Inter, system-ui, sans-serif"
-          fill="#2A2520"
-          style={{ pointerEvents: 'none', userSelect: 'none' }}
-        >
-          {node.title.length > 30 ? node.title.slice(0, 28) + '…' : node.title}
-        </text>
-      )}
     </g>
   )
 }

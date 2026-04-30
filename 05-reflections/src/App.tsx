@@ -198,10 +198,31 @@ export default function App() {
             onClick={handleNodeClick}
             isConnectSource={node.id === connectSourceId}
             connectMode={connectMode}
-            pos={posMap.get(node.id) ?? { x: 800, y: 460 }}
+            pos={posMap.get(node.id) ?? { x: 900, y: 600 }}
             onHoverChange={setHoveredNodeId}
           />
         ))}
+        {/* Hover label rendered last so it always paints above all nodes */}
+        {hoveredNodeId && (() => {
+          const node = nodes.find(n => n.id === hoveredNodeId)
+          const pos = posMap.get(hoveredNodeId)
+          if (!node || !pos) return null
+          const label = node.title.length > 30 ? node.title.slice(0, 28) + '…' : node.title
+          return (
+            <text
+              x={pos.x}
+              y={pos.y - 26}
+              textAnchor="middle"
+              fontSize={11}
+              fontWeight={400}
+              fontFamily="Inter, system-ui, sans-serif"
+              fill="#2A2520"
+              style={{ pointerEvents: 'none', userSelect: 'none' }}
+            >
+              {label}
+            </text>
+          )
+        })()}
       </ArcCanvas>
 
       {selectedNode && (

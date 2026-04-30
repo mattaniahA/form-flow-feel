@@ -1,25 +1,57 @@
 import { useRef, useState, useCallback, useEffect, type MouseEvent, type ReactNode } from 'react'
 
-export const PENTAGON_CENTER = { x: 800, y: 460 }
+export const PENTAGON_CENTER = { x: 900, y: 600 }
 
-export const ARC_NODES = [
-  { id: 'systems',     label: 'Systems + Sensibilities',      x: 800,  y: 110 },
-  { id: 'repetition',  label: 'Forms of Repetition',          x: 1133, y: 352 },
-  { id: 'personal',    label: 'Mapping the Personal',         x: 1006, y: 743 },
-  { id: 'world',       label: 'World as Input',               x: 594,  y: 743 },
-  { id: 'reflections', label: 'Reflections + Future Thinking', x: 467,  y: 352 },
-] as const
+// ─── Tune this one number to resize the whole pentagon ───────────────────────
+const PENTAGON_RADIUS = 500
+// ─────────────────────────────────────────────────────────────────────────────
 
-export type ArcNodeId = typeof ARC_NODES[number]['id']
-export const ZONE_RADIUS = 200
-export const STUDENT_RING_R = 720
+function buildPentagon(r: number) {
+  const { x: cx, y: cy } = PENTAGON_CENTER
+  // Vertices of a regular pentagon, apex pointing up (-90°), 72° apart
+  const pts = [-90, -18, 54, 126, 198].map(deg => ({
+    x: Math.round(cx + r * Math.cos((deg * Math.PI) / 180)),
+    y: Math.round(cy + r * Math.sin((deg * Math.PI) / 180)),
+  }))
 
-const ARC_PATH = 'M 800,110 Q 1005,178 1133,352 Q 1131,568 1006,743 Q 800,808 594,743 Q 469,568 467,352 Q 595,178 800,110'
+  // Bezier control point: push each edge midpoint outward from center
+  const push = r * 0.38
+  const ctrl = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2
+    const mag = Math.hypot(mx - cx, my - cy)
+    return { x: Math.round(mx + ((mx - cx) / mag) * push), y: Math.round(my + ((my - cy) / mag) * push) }
+  }
+
+  const arcPath = pts
+    .map((p, i) => {
+      const q = pts[(i + 1) % 5]
+      const c = ctrl(p, q)
+      return (i === 0 ? `M ${p.x},${p.y} ` : '') + `Q ${c.x},${c.y} ${q.x},${q.y}`
+    })
+    .join(' ')
+
+  return {
+    arcNodes: [
+      { id: 'systems'     as const, label: 'Systems + Sensibilities',       ...pts[0] },
+      { id: 'repetition'  as const, label: 'Forms of Repetition',           ...pts[1] },
+      { id: 'personal'    as const, label: 'Mapping the Personal',          ...pts[2] },
+      { id: 'world'       as const, label: 'World as Input',                ...pts[3] },
+      { id: 'reflections' as const, label: 'Reflections + Future Thinking', ...pts[4] },
+    ],
+    arcPath,
+  }
+}
+
+const { arcNodes: ARC_NODES, arcPath: ARC_PATH } = buildPentagon(PENTAGON_RADIUS)
+export { ARC_NODES }
+export type ArcNodeId = (typeof ARC_NODES)[number]['id']
+export const ZONE_RADIUS = 235
+export const STUDENT_RING_R = 900
 
 const SCALE_MIN = 0.3
 const SCALE_MAX = 4
-const CANVAS_W = 1600
-const CANVAS_H = 900
+const CANVAS_W = 1800
+const CANVAS_H = 1200
 
 // Compute a circular arc centered on `node`, running along the outside of its
 // zone circle. The arc spans ±62° around the outward direction from the

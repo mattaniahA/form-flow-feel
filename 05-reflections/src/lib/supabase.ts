@@ -17,6 +17,7 @@ export interface GardenNode {
   x: number | null
   y: number | null
   external_url: string | null
+  image_url: string | null
   created_by: string
   is_seed: boolean
   is_student: boolean

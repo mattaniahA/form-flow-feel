@@ -35,6 +35,10 @@ export default function DetailPanel({
   const [editArcNode, setEditArcNode]         = useState<ArcNode | null>(node.arc_node)
   const [editIsStudent, setEditIsStudent]     = useState(node.is_student ?? false)
 
+  const [imageFile, setImageFile]       = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploading, setUploading]       = useState(false)
+
   // Keep edit fields in sync if the node updates via realtime while not editing
   useEffect(() => {
     if (!editing) {
@@ -78,13 +82,43 @@ export default function DetailPanel({
     setEditIsStudent(node.is_student ?? false)
     setEditError(null)
     setConfirmDelete(false)
+    setImageFile(null)
+    setImagePreview(null)
+    setUploading(false)
     setEditing(true)
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const accepted = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!accepted.includes(file.type)) { setEditError('Only JPEG, PNG, GIF, or WebP accepted.'); return }
+    if (file.size > 5 * 1024 * 1024) { setEditError('Image must be under 5 MB.'); return }
+    setImageFile(file)
+    setEditError(null)
+    const reader = new FileReader()
+    reader.onload = ev => setImagePreview(ev.target?.result as string)
+    reader.readAsDataURL(file)
   }
 
   async function handleSave() {
     if (!editTitle.trim()) return
     setSaving(true)
     setEditError(null)
+
+    let newImageUrl = node.image_url
+    if (imageFile) {
+      setUploading(true)
+      const ext = imageFile.name.split('.').pop() ?? 'jpg'
+      const { error: upErr } = await supabase.storage
+        .from('node-images')
+        .upload(`${node.id}/avatar.${ext}`, imageFile, { upsert: true, contentType: imageFile.type })
+      setUploading(false)
+      if (upErr) { setEditError('Image upload failed. Try again.'); setSaving(false); return }
+      const { data } = supabase.storage.from('node-images').getPublicUrl(`${node.id}/avatar.${ext}`)
+      newImageUrl = data.publicUrl
+    }
+
     const { error } = await supabase.from('nodes').update({
       type:         editType,
       title:        editTitle.trim().slice(0, 80),
@@ -92,10 +126,13 @@ export default function DetailPanel({
       external_url: editUrl.trim() || null,
       arc_node:     editArcNode,
       is_student:   editType === 'person' ? editIsStudent : false,
+      image_url:    newImageUrl,
     }).eq('id', node.id)
     setSaving(false)
     if (error) { setEditError('Save failed. Try again.'); return }
     setEditing(false)
+    setImageFile(null)
+    setImagePreview(null)
   }
 
   async function handleDeleteNode() {
@@ -205,6 +242,27 @@ export default function DetailPanel({
               className="w-full border border-[#C9C3B5] bg-white/60 rounded px-3 py-2 text-sm text-[#2A2520] placeholder-[#A9A39D] outline-none focus:border-[#8B8378]"
             />
 
+            {/* Image */}
+            <div>
+              <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">
+                Image <span className="normal-case text-[#A9A39D]">(optional · max 5 MB)</span>
+              </p>
+              {(imagePreview ?? node.image_url) && (
+                <img
+                  src={imagePreview ?? node.image_url!}
+                  alt="preview"
+                  className="w-full h-32 object-cover rounded mb-2 border border-[#C9C3B5]"
+                />
+              )}
+              <label className="block cursor-pointer">
+                <span className="w-full py-1.5 text-xs font-light text-[#6B6560] border border-[#C9C3B5] rounded hover:bg-[#EDE9E0] transition-colors flex items-center justify-center">
+                  {node.image_url || imageFile ? 'Replace image' : 'Upload image'}
+                </span>
+                <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="sr-only" onChange={handleImageSelect} />
+              </label>
+              {uploading && <p className="text-xs text-[#8B8378] mt-1">Uploading…</p>}
+            </div>
+
             {/* Week */}
             <div>
               <p className="text-xs text-[#8B8378] font-light uppercase tracking-wider mb-1.5">
@@ -230,6 +288,15 @@ export default function DetailPanel({
         ) : (
           /* ── View mode ── */
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {node.image_url && (
+              <img
+                src={node.image_url}
+                alt={node.title}
+                className="w-full rounded object-cover border border-[#C9C3B5]"
+                style={{ maxHeight: '180px' }}
+              />
+            )}
+
             {node.type === 'person' && node.is_student && (
               <p className="text-xs text-[#7D9176] font-light tracking-wide">◎ student</p>
             )}
@@ -294,7 +361,7 @@ export default function DetailPanel({
                 onClick={handleSave}
                 disabled={!editTitle.trim() || saving}
                 className="flex-1 py-2 text-sm font-light text-[#2A2520] border border-[#8B8378] rounded bg-[#EDE9E0] hover:bg-[#E0DAD0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >{saving ? 'Saving…' : 'Save'}</button>
+              >{saving ? (uploading ? 'Uploading…' : 'Saving…') : 'Save'}</button>
             </div>
           ) : (
             <>
